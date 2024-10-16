@@ -1,14 +1,18 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { Text } from "react-native";
+import { useAuth } from "@/authentication";
 
-// const Icon = ({ children }: { children: React.ReactNode }) => (
-//   <Text style={{ fontSize: 24 }}>{children}</Text>
-// );
-
-const Icon = (icon: string) => () =>
-  <Text style={{ fontSize: 24 }}>{icon}</Text>;
+const Icon = (icon: string) => () => (
+  <Text style={{ fontSize: 24 }}>{icon}</Text>
+);
 
 export default function TabLayout() {
+  const { hasAccess } = useAuth();
+
+  if (!hasAccess) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <Tabs>
       <Tabs.Screen

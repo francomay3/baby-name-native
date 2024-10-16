@@ -1,8 +1,8 @@
-import Users from "@/views/Users";
+import User from "@/views/User";
 import React from "react";
 
 const user = () => {
-  return <Users />;
+  return <User />;
 };
 
 export default user;

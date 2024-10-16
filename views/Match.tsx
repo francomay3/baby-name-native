@@ -1,10 +1,9 @@
-import Button from "@/components/Button";
-import { Column, PageContainer, Row } from "@/components/ui/layout";
-import { Title } from "@/components/ui/typography";
 import React, { Fragment, useRef, useState } from "react";
 import { Image } from "react-native";
 import { faces, Name, names, titles } from "@/database/db";
 import * as arr from "@/utils/array";
+import { Button, Title } from "react-native-paper";
+import { Column, Container, Row } from "@/components/layout";
 
 type Faces = [number, number];
 type Names = [Name, Name];
@@ -50,10 +49,10 @@ const Match = () => {
   };
 
   return (
-    <PageContainer center>
-      <Column gap={24} align="center" style={{ width: "100%", maxWidth: 350 }}>
+    <Container center>
+      <Column gap={24} align="center" w="100%" mw={350}>
         <Title>{title}</Title>
-        <Row gap={16} align="center" style={{ width: "100%" }}>
+        <Row gap={16} align="center" w="100%">
           {names.map(({ name }, i) => (
             <Fragment key={name}>
               <Column gap={12} align="center" style={{ flex: 1 }}>
@@ -62,10 +61,12 @@ const Match = () => {
                   style={{ borderRadius: 9999, width: 54, height: 54 }}
                 />
                 <Button
+                  mode="contained"
                   key={name}
                   onPress={() => handleNameSelection(name)}
-                  title={name}
-                />
+                >
+                  {name}
+                </Button>
               </Column>
               {i === 0 && (
                 <Image
@@ -82,7 +83,7 @@ const Match = () => {
           ))}
         </Row>
       </Column>
-    </PageContainer>
+    </Container>
   );
 };
 

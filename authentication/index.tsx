@@ -13,8 +13,10 @@ import {
   onAuthStateChanged,
   signOut as signOutFirebase,
   UserCredential,
+  sendEmailVerification,
+  // TODO: add this functionality
+  // sendPasswordResetEmail,
 } from "firebase/auth";
-import { FirebaseError } from "firebase/app";
 
 type signUp = (
   email: string,
@@ -32,6 +34,7 @@ type Value =
       signUp: signUp;
       signIn: signIn;
       signOut: signOut;
+      hasAccess: boolean;
     }
   | undefined;
 
@@ -48,6 +51,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       email,
       password
     );
+    console.log(userCredential);
     return userCredential;
   };
 
@@ -61,11 +65,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       email,
       password
     );
+
+    await sendEmailVerification(userCredential.user);
+
+    // Creating a new user account automatically signs them in,
+    // but we don't want this behavior as the email is not yet verified.
+    // Sign out the user immediately to prevent access before email verification
+    await signOut();
+
     return userCredential;
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+      console.log("somethong changed");
       setUser(newUser);
     });
     return unsubscribe;
@@ -78,6 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         signOut,
         signUp,
         user,
+        hasAccess: user?.emailVerified ?? false,
       }}
     >
       {children}
