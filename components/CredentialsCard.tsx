@@ -1,59 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import { Column, Row, Divider } from "@/components/layout";
 import { faces } from "@/database/db";
 import { Image } from "react-native";
-import { Card, TextInput, Button } from "react-native-paper";
+import { Card, Button } from "react-native-paper";
 import { Text } from "@/components/typography";
-import Loader from "./Loader";
+import { useTheme } from "react-native-paper";
+
+type Alternative = {
+  title: string;
+  onPress: () => void;
+};
 
 export default function CredentialsCard({
   title,
-  onSubmit,
   alternatives,
-  errorMessage,
-  emailError,
-  passwordError,
+  form,
 }: {
-  errorMessage?: string;
-  emailError?: boolean;
-  passwordError?: boolean;
   title: string;
-  onSubmit: (email: string, password: string) => Promise<void>;
-  alternatives: {
-    title: string;
-    onPress: () => void;
-  }[];
+  form: React.ReactNode;
+  alternatives: Alternative[];
 }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isInputing, setIsInputing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleSetPassword = (password: string) => {
-    if (!isInputing) {
-      setIsInputing(true);
-    }
-    setPassword(password);
-  };
-
-  const handleSetEmail = (email: string) => {
-    if (!isInputing) {
-      setIsInputing(true);
-    }
-    setEmail(email);
-  };
-
-  const handleSubmit = async () => {
-    if (isInputing) {
-      setIsInputing(false);
-      setLoading(true);
-    }
-    await onSubmit(email, password);
-    setLoading(false);
-  };
-
-  if (loading) return <Loader />;
-
   return (
     <Card>
       <Card.Title title={title} />
@@ -65,28 +31,7 @@ export default function CredentialsCard({
               style={{ borderRadius: 9999, width: 54, height: 54 }}
             />
           </Row>
-          {errorMessage && !isInputing && <Text c="red">{errorMessage!}</Text>}
-          <TextInput
-            placeholder="Email"
-            value={email}
-            onChangeText={handleSetEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            autoFocus
-            error={emailError}
-          />
-          <TextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={handleSetPassword}
-            secureTextEntry
-            autoComplete="password"
-            error={passwordError}
-          />
-          <Button mode="contained" onPress={handleSubmit}>
-            {title}
-          </Button>
+          {form}
         </Column>
       </Card.Content>
       <Divider margin="md" />
@@ -96,7 +41,7 @@ export default function CredentialsCard({
             <>
               <Text align="center">Or</Text>
               {alternatives.map(({ title, onPress }) => (
-                <Button key={title} mode="contained" onPress={onPress}>
+                <Button key={title} mode="outlined" onPress={onPress}>
                   {title}
                 </Button>
               ))}

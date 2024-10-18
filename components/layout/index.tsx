@@ -34,19 +34,25 @@ const Box = styled.View<{
   mt?: Size;
   mw?: Size;
   p?: Size;
+  pb?: Size;
+  pl?: Size;
+  pr?: Size;
+  pt?: Size;
   w?: Size;
 }>`
   background-color: ${({ bg }) => bg ?? "transparent"};
   border-radius: ${({ br }) => toUnit(br)};
   height: ${({ h }) => toUnit(h ?? "auto")};
-  margin: ${({ m }) => toUnit(m)};
-  margin-bottom: ${({ mb }) => toUnit(mb)};
-  margin-left: ${({ ml }) => toUnit(ml)};
-  margin-right: ${({ mr }) => toUnit(mr)};
-  margin-top: ${({ mt }) => toUnit(mt)};
+  margin-bottom: ${({ m, mb }) => (mb ? toUnit(mb) : toUnit(m))};
+  margin-left: ${({ m, ml }) => (ml ? toUnit(ml) : toUnit(m))};
+  margin-right: ${({ m, mr }) => (mr ? toUnit(mr) : toUnit(m))};
+  margin-top: ${({ m, mt }) => (mt ? toUnit(mt) : toUnit(m))};
   max-height: ${({ mh }) => toUnit(mh ?? "auto")};
   max-width: ${({ mw }) => toUnit(mw ?? "auto")};
-  padding: ${({ p }) => toUnit(p)};
+  padding-bottom: ${({ p, pb }) => (pb ? toUnit(pb) : toUnit(p))};
+  padding-left: ${({ p, pl }) => (pl ? toUnit(pl) : toUnit(p))};
+  padding-right: ${({ p, pr }) => (pr ? toUnit(pr) : toUnit(p))};
+  padding-top: ${({ p, pt }) => (pt ? toUnit(pt) : toUnit(p))};
   width: ${({ w }) => toUnit(w ?? "auto")};
 `;
 

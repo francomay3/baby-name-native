@@ -51,7 +51,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       email,
       password
     );
-    console.log(userCredential);
     return userCredential;
   };
 
@@ -78,7 +77,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (newUser) => {
-      console.log("somethong changed");
       setUser(newUser);
     });
     return unsubscribe;

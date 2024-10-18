@@ -1,49 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/authentication";
-import { Link, router } from "expo-router";
-import { Column, Container, Row } from "@/components/layout";
-import { FirebaseError } from "firebase/app";
+import { router } from "expo-router";
+import { Container } from "@/components/layout";
 import CredentialsCard from "@/components/CredentialsCard";
 import { Text } from "@/components/typography";
 import { Button, Card } from "react-native-paper";
+import SignupForm from "@/components/form/SignupForm";
 
-export default function Signup() {
-  const { signUp, user, hasAccess } = useAuth();
-  const [emailError, setEmailError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+const Signup = () => {
+  const { user, hasAccess } = useAuth();
   const [awaitingVerification, setAwaitingVerification] = useState(false);
-
   useEffect(() => {
     if (hasAccess) {
       router.push("/");
     }
   }, [user]);
-
-  const handleSignup = async (email: string, password: string) => {
-    setEmailError(false);
-    setPasswordError(false);
-    setErrorMessage("");
-    try {
-      await signUp(email, password);
-      setAwaitingVerification(true);
-    } catch (error) {
-      let errorMessage = "";
-      if (error instanceof FirebaseError) {
-        const errorCode = error.code;
-        switch (errorCode) {
-          // TODO: Add more error handling
-          case "auth/invalid-email":
-            errorMessage = "Invalid email address.";
-            setEmailError(true);
-            break;
-          default:
-            errorMessage = "Something went wrong. Please try again.";
-        }
-      }
-      setErrorMessage(errorMessage);
-    }
-  };
 
   const handleLogin = async () => {
     router.replace("/login");
@@ -71,11 +42,10 @@ export default function Signup() {
   return (
     <Container center>
       <CredentialsCard
-        errorMessage={errorMessage}
-        emailError={emailError}
-        passwordError={passwordError}
         title="Sign Up"
-        onSubmit={handleSignup}
+        form={
+          <SignupForm onSubmitSuccess={() => setAwaitingVerification(true)} />
+        }
         alternatives={[
           { title: "Log In", onPress: handleLogin },
           // { title: "Forgot Password", onPress: handleForgotPassword },
@@ -83,4 +53,6 @@ export default function Signup() {
       />
     </Container>
   );
-}
+};
+
+export default Signup;
