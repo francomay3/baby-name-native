@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Formik, Form as FormikForm, FormikProps } from "formik";
-import { Button, useTheme } from "react-native-paper";
+import { Formik, FormikProps } from "formik";
+import { Button } from "react-native-paper";
 import { GestureResponderEvent } from "react-native";
 import { Column } from "../layout";
 import { Text } from "../typography";
@@ -20,19 +20,19 @@ const Form = <T extends Record<string, any>>({
   submitText: string;
   initialValues: T;
   errorMessage?: string;
-  onSubmitSuccess?: () => void;
-  onSubmitFailure?: () => void;
+  onSubmitSuccess?: (values: T) => void;
+  onSubmitFailure?: (error: unknown) => void;
   validate: (values: T) => { [key: string]: string | undefined };
 }) => {
   const [loading, setLoading] = useState(false);
-  const theme = useTheme();
+
   const handleSubmit = async (values: T) => {
     setLoading(true);
     try {
       await onSubmit(values);
-      onSubmitSuccess?.();
+      onSubmitSuccess?.(values);
     } catch (error) {
-      onSubmitFailure?.();
+      onSubmitFailure?.(error);
     }
     setLoading(false);
   };
@@ -44,28 +44,28 @@ const Form = <T extends Record<string, any>>({
       validate={validate}
     >
       {(props: FormikProps<T>) => (
-        <FormikForm>
-          {errorMessage && <Text c={theme.colors.error}>{errorMessage}</Text>}
-          <Column gap="md" align="stretch">
+        <Column gap="md" align="center">
+          {errorMessage && <Text c="error">{errorMessage}</Text>}
+          <Column gap="md" align="stretch" w="100%">
             {React.Children.map(fields, (child) => {
               if (React.isValidElement(child)) {
                 return React.cloneElement(child, props);
               }
               return child;
             })}
-            <Button
-              loading={loading}
-              mode="contained"
-              onPress={
-                props.handleSubmit as unknown as (
-                  e: GestureResponderEvent
-                ) => void
-              }
-            >
-              {submitText}
-            </Button>
           </Column>
-        </FormikForm>
+          <Button
+            loading={loading}
+            mode="contained"
+            onPress={
+              props.handleSubmit as unknown as (
+                e: GestureResponderEvent
+              ) => void
+            }
+          >
+            {submitText}
+          </Button>
+        </Column>
       )}
     </Formik>
   );

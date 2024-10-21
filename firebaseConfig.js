@@ -36,4 +36,6 @@ const auth =
         persistence: getReactNativePersistence(AsyncStorage),
       });
 
+// const db = getFirestore(app);
+
 export { auth };

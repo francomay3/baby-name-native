@@ -17,6 +17,7 @@ import {
   // TODO: add this functionality
   // sendPasswordResetEmail,
 } from "firebase/auth";
+import Loader from "@/components/Loader";
 
 type signUp = (
   email: string,
@@ -44,6 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const signIn: signIn = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(
@@ -78,9 +80,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (newUser) => {
       setUser(newUser);
+      if (loading) setLoading(false);
     });
     return unsubscribe;
   }, []);
+
+  if (loading) return <Loader />;
 
   return (
     <AuthContext.Provider

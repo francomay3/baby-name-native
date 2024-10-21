@@ -10,23 +10,20 @@ import {
 import { useAuth } from "@/authentication";
 import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
-import { TextInput, useTheme } from "react-native-paper";
 
 type Values = {
   email: string;
   password: string;
 };
 
-const validate = getFormValidate([
-  { key: "email", validator: composeValidators(required, emailFormat) },
-  { key: "password", validator: composeValidators(required) },
-]);
+const validate = getFormValidate({
+  email: composeValidators(required, emailFormat),
+  password: composeValidators(required),
+});
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { signIn } = useAuth();
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
-  const theme = useTheme();
 
   const handleLogin = async ({
     email,
@@ -48,14 +45,6 @@ const LoginForm = () => {
     }
   };
 
-  const eyeIcon = (
-    <TextInput.Icon
-      icon={secureTextEntry ? "eye-off" : "eye"}
-      onPress={() => setSecureTextEntry((prev) => !prev)}
-      color={theme.colors.backdrop}
-    />
-  );
-
   return (
     <Form<Values>
       validate={validate}
@@ -66,10 +55,10 @@ const LoginForm = () => {
     >
       <ConnectedTextInput name="email" label="Email" />
       <ConnectedTextInput
+        autoCapitalize="none"
         name="password"
         label="Password"
-        secureTextEntry={secureTextEntry}
-        right={eyeIcon}
+        secureTextEntry
       />
     </Form>
   );

@@ -1,14 +1,9 @@
-import React, {
-  ComponentProps,
-  RefAttributes,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import React, { ComponentProps, useState } from "react";
 import { Field } from "formik";
 import { TextInput } from "react-native-paper";
 import { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
-import { Box } from "@/components/layout";
+import { Box, Column } from "@/components/layout";
+import { Text } from "../typography";
 
 type DumbTextInputProps = ComponentProps<typeof TextInput> &
   ComponentProps<typeof Box>;
@@ -24,17 +19,13 @@ export const DumbTextInput = ({
   ...rest
 }: DumbTextInputProps & {
   label: string;
-  errorMessage?: string;
+  error?: string;
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-
   const handleBlur = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
-    setIsFocused(false);
     onBlur && onBlur(e);
   };
 
   const handleFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
-    setIsFocused(true);
     onFocus && onFocus(e);
   };
 
@@ -43,23 +34,20 @@ export const DumbTextInput = ({
   };
 
   return (
-    <Box {...rest}>
+    <Column align="stretch" {...rest}>
       <TextInput
-        mode="outlined"
+        mode="flat"
         value={value}
         onChangeText={handleChange}
         onBlur={handleBlur}
         error={error}
         onFocus={handleFocus}
         placeholder={!label ? placeholder : undefined}
-        label={
-          isFocused
-            ? `${label}${error ? ` - ${error}` : ""}`
-            : `${label}${error ? `*` : ""}`
-        }
+        label={label}
         {...rest}
       />
-    </Box>
+      {error && <Text c="error">{error}</Text>}
+    </Column>
   );
 };
 
@@ -84,8 +72,8 @@ export const ConnectedTextInput = ({
       component={DumbTextInput}
       onBlur={handleBlur(name)}
       onChangeText={handleChange(name)}
-      error={error}
       name={name}
+      error={error}
       label={label}
       placeholder={placeholder}
       value={value}

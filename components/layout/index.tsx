@@ -1,5 +1,6 @@
 import styled from "styled-components/native";
 import { Divider as PaperDivider } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const sizeMap = {
   xs: 4,
@@ -39,6 +40,7 @@ const Box = styled.View<{
   pr?: Size;
   pt?: Size;
   w?: Size;
+  flex?: number;
 }>`
   background-color: ${({ bg }) => bg ?? "transparent"};
   border-radius: ${({ br }) => toUnit(br)};
@@ -54,6 +56,7 @@ const Box = styled.View<{
   padding-right: ${({ p, pr }) => (pr ? toUnit(pr) : toUnit(p))};
   padding-top: ${({ p, pt }) => (pt ? toUnit(pt) : toUnit(p))};
   width: ${({ w }) => toUnit(w ?? "auto")};
+  ${({ flex }) => (flex ? `flex: ${flex}` : "")}
 `;
 
 const Flex = styled(Box)<{
@@ -79,11 +82,11 @@ const Column = styled(Flex)`
 
 const Container = ({
   children,
-  center,
+  center = false,
   ...props
 }: {
   children: React.ReactNode;
-  center: boolean;
+  center?: boolean;
 } & React.ComponentProps<typeof Column>) => (
   <Column
     align={center ? "center" : "start"}

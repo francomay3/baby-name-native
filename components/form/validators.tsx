@@ -32,10 +32,10 @@ export const composeValidators =
   };
 
 export const getFormValidate =
-  (temp: { key: string; validator: Validator }[]) => (values: Values) => {
+  (temp: Record<string, Validator>) => (values: Values) => {
     const errors: Partial<Values> = {};
 
-    temp.forEach(({ key, validator }) => {
+    Object.entries(temp).forEach(([key, validator]) => {
       const value = values[key];
       const error = validator(value, values);
       if (error) {

@@ -11,7 +11,6 @@ import {
 import { useAuth } from "@/authentication";
 import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
-import { TextInput, useTheme } from "react-native-paper";
 
 type Values = {
   email: string;
@@ -19,27 +18,18 @@ type Values = {
   confirmPassword: string;
 };
 
-type Errors = Partial<Values>;
-
-const validate = getFormValidate([
-  { key: "email", validator: composeValidators(required, emailFormat) },
-  { key: "password", validator: composeValidators(required) },
-  {
-    key: "confirmPassword",
-    validator: composeValidators(required, matches("password")),
-  },
-]);
+const validate = getFormValidate({
+  email: composeValidators(required, emailFormat),
+  password: composeValidators(required),
+  confirmPassword: composeValidators(required, matches("password")),
+});
 
 const SignupForm = ({
   onSubmitSuccess,
-  onSubmitFailure,
 }: {
-  onSubmitSuccess?: () => void;
-  onSubmitFailure?: () => void;
+  onSubmitSuccess?: (values: Values) => void;
 }) => {
   const [errorMessage, setErrorMessage] = useState("");
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
-  const theme = useTheme();
   const { signUp } = useAuth();
   const handleSignup = async ({
     email,
@@ -49,27 +39,17 @@ const SignupForm = ({
     password: string;
   }) => {
     setErrorMessage("");
-    try {
-      await signUp(email, password);
-      onSubmitSuccess?.();
-    } catch (error) {
-      onSubmitFailure?.();
-      if (error instanceof FirebaseError) {
-        const errorCode = error.code as keyof typeof errorMessageMap;
-        setErrorMessage(errorMessageMap[errorCode]);
-      } else {
-        setErrorMessage(errorMessageMap["unknown"]);
-      }
-    }
+    await signUp(email, password);
   };
 
-  const eyeIcon = (
-    <TextInput.Icon
-      icon={secureTextEntry ? "eye-off" : "eye"}
-      onPress={() => setSecureTextEntry((prev) => !prev)}
-      color={theme.colors.backdrop}
-    />
-  );
+  const onSubmitFailure = (error: unknown) => {
+    if (error instanceof FirebaseError) {
+      const errorCode = error.code as keyof typeof errorMessageMap;
+      setErrorMessage(errorMessageMap[errorCode]);
+    } else {
+      setErrorMessage(errorMessageMap["unknown"]);
+    }
+  };
 
   return (
     <Form<Values>
@@ -83,16 +63,16 @@ const SignupForm = ({
     >
       <ConnectedTextInput name="email" label="Email" />
       <ConnectedTextInput
+        autoCapitalize="none"
         name="password"
         label="Password"
-        secureTextEntry={secureTextEntry}
-        right={eyeIcon}
+        secureTextEntry
       />
       <ConnectedTextInput
+        autoCapitalize="none"
         name="confirmPassword"
         label="Confirm Password"
-        secureTextEntry={secureTextEntry}
-        right={eyeIcon}
+        secureTextEntry
       />
     </Form>
   );
