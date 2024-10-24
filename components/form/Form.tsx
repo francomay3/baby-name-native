@@ -22,7 +22,7 @@ const Form = <T extends Record<string, any>>({
   errorMessage?: string;
   onSubmitSuccess?: (values: T) => void;
   onSubmitFailure?: (error: unknown) => void;
-  validate: (values: T) => { [key: string]: string | undefined };
+  validate?: (values: T) => { [key: string]: string | undefined };
 }) => {
   const [loading, setLoading] = useState(false);
 

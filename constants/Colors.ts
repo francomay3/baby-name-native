@@ -1,4 +1,4 @@
-import materialTheme from "../material-theme.json";
+import materialTheme from "../utils/theme/material-theme.json";
 
 const lightScheme = materialTheme.schemes.light;
 const darkScheme = materialTheme.schemes.dark;

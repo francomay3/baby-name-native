@@ -13,12 +13,14 @@ import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
 
 type Values = {
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
 };
 
 const validate = getFormValidate({
+  name: composeValidators(required),
   email: composeValidators(required, emailFormat),
   password: composeValidators(required),
   confirmPassword: composeValidators(required, matches("password")),
@@ -32,14 +34,16 @@ const SignupForm = ({
   const [errorMessage, setErrorMessage] = useState("");
   const { signUp } = useAuth();
   const handleSignup = async ({
+    name,
     email,
     password,
   }: {
+    name: string;
     email: string;
     password: string;
   }) => {
     setErrorMessage("");
-    await signUp(email, password);
+    await signUp(name, email, password);
   };
 
   const onSubmitFailure = (error: unknown) => {
@@ -55,12 +59,18 @@ const SignupForm = ({
     <Form<Values>
       onSubmit={handleSignup}
       submitText="Sign Up"
-      initialValues={{ email: "", password: "", confirmPassword: "" }}
+      initialValues={{
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      }}
       errorMessage={errorMessage}
       onSubmitSuccess={onSubmitSuccess}
       onSubmitFailure={onSubmitFailure}
       validate={validate}
     >
+      <ConnectedTextInput name="name" label="Name" />
       <ConnectedTextInput name="email" label="Email" />
       <ConnectedTextInput
         autoCapitalize="none"

@@ -9,7 +9,7 @@ import { auth } from "@/firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  User,
+  User as GoogleUser,
   onAuthStateChanged,
   signOut as signOutFirebase,
   UserCredential,
@@ -18,8 +18,10 @@ import {
   // sendPasswordResetEmail,
 } from "firebase/auth";
 import Loader from "@/components/Loader";
+import { getCurrentUser, User } from "@/database";
 
 type signUp = (
+  name: string,
   email: string,
   password: string
 ) => Promise<UserCredential | undefined>;
@@ -37,6 +39,7 @@ type Value =
       signOut: signOut;
       hasAccess: boolean;
       loading: boolean;
+      googleUser: GoogleUser | null;
     }
   | undefined;
 
@@ -46,6 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   const signIn: signIn = async (email, password) => {
@@ -61,7 +65,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     await signOutFirebase(auth);
   };
 
-  const signUp: signUp = async (email, password) => {
+  const signUp: signUp = async (name, email, password) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -69,6 +73,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     );
 
     await sendEmailVerification(userCredential.user);
+
+    // TODO: here we need to update the user in our database as well. that includes the name
 
     // Creating a new user account automatically signs them in,
     // but we don't want this behavior as the email is not yet verified.
@@ -79,8 +85,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (googleUsr) => {
+      const newUser = await getCurrentUser(googleUsr?.uid || "");
       setUser(newUser);
+      setGoogleUser(googleUsr);
       if (loading) setLoading(false);
     });
     return unsubscribe;
@@ -95,7 +103,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         signOut,
         signUp,
         user,
-        hasAccess: user?.emailVerified ?? false,
+        googleUser,
+        hasAccess: googleUser?.emailVerified ?? false,
         loading,
       }}
     >

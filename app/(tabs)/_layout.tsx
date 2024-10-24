@@ -3,7 +3,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useAuth } from "@/authentication";
 import TabBar from "@/components/TabBar";
 import { useTheme } from "react-native-paper";
-
+import header from "@/components/Header";
 // only to get type safety for the icon names
 const icon = (name: keyof typeof FontAwesome.glyphMap) => name;
 
@@ -35,6 +35,8 @@ export default function TabLayout() {
         name="account"
         options={{
           title: "Account",
+          headerShown: true,
+          header,
           // @ts-ignore
           icon: icon("user"),
         }}

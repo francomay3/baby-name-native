@@ -3,15 +3,16 @@ import { useAuth } from "@/authentication";
 import { router } from "expo-router";
 import { Container } from "@/components/layout";
 import CredentialsForm from "@/components/CredentialsForm";
-import { Bold, Text } from "@/components/typography";
+import { Text } from "@/components/typography";
 import { Button, Card } from "react-native-paper";
 import SignupForm from "@/components/form/SignupForm";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Signup = () => {
-  const { user, hasAccess } = useAuth();
-  const [email, setEmail] = useState("");
-  const awaitingVerification = email !== "";
+  const { user, hasAccess, signIn } = useAuth();
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const awaitingVerification = credentials.email !== "";
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (hasAccess) {
@@ -20,11 +21,18 @@ const Signup = () => {
   }, [user]);
 
   const handleLogin = async () => {
-    router.navigate("/login");
+    setLoading(true);
+    try {
+      await signIn(credentials.email, credentials.password);
+    } catch (error) {
+      router.navigate("/login");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const onSubmitSuccess = ({ email }: { email: string }) => {
-    setEmail(email);
+  const onSubmitSuccess = (cr: { email: string; password: string }) => {
+    setCredentials(cr);
   };
 
   if (awaitingVerification) {
@@ -34,11 +42,17 @@ const Signup = () => {
           <Card>
             <Container center gap="lg">
               <Text align="center">
-                A verification email has been sent to <Bold>{email}</Bold>.
-                Please click on the link in the email to verify your account,
-                then return to this app and log in!
+                A verification email has been sent to{" "}
+                <Text bold>{credentials.email}</Text>. Please click on the link
+                in the email to verify your account, then return to this app and
+                click on the login button!
               </Text>
-              <Button mode="contained" onPress={handleLogin}>
+              <Button
+                mode="contained"
+                onPress={handleLogin}
+                loading={loading}
+                disabled={loading}
+              >
                 Log In
               </Button>
             </Container>

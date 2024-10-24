@@ -1,27 +1,18 @@
-import React from "react";
-import styled from "styled-components/native";
+import { ComponentProps, ReactNode } from "react";
 import { Box } from "../layout";
 import { Text as NativeText, useTheme } from "react-native-paper";
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
 
-// ... existing imports ...
+type BoxProps = ComponentProps<typeof Box> &
+  ComponentProps<typeof NativeText> & {
+    c?: keyof MD3Colors;
+    align?: "left" | "center" | "right" | "justify" | "auto";
+    weight?: "regular" | "medium" | "bold";
+    italic?: boolean;
+    bold?: boolean;
+  };
 
-type TextChildrenType = React.ReactNode;
-
-const Text = ({
-  children,
-  align = "left",
-  c,
-  weight = "regular",
-  italic = false,
-  ...props
-}: {
-  children: TextChildrenType;
-  align?: "left" | "center" | "right" | "justify" | "auto";
-  c?: keyof MD3Colors;
-  weight?: "regular" | "medium" | "bold";
-  italic?: boolean;
-} & React.ComponentProps<typeof Box>) => {
+const Text = ({ children, c, ...props }: BoxProps) => {
   const theme = useTheme();
   const color = (c ? theme.colors[c] : theme.colors.onSurface) as string;
 
@@ -29,12 +20,12 @@ const Text = ({
     <Box {...props}>
       <NativeText
         style={{
-          textAlign: align,
           color,
-          fontWeight: weight,
-          fontStyle: italic ? "italic" : "normal",
-          fontSize: 16,
+          textAlign: props.align,
+          fontWeight: props.bold ? "bold" : "normal",
+          fontStyle: props.italic ? "italic" : "normal",
         }}
+        {...props}
       >
         {children}
       </NativeText>
@@ -42,16 +33,4 @@ const Text = ({
   );
 };
 
-const Bold = ({ children, ...props }: { children: TextChildrenType }) => (
-  <Text weight="bold" {...props}>
-    {children}
-  </Text>
-);
-
-const Italic = ({ children, ...props }: { children: TextChildrenType }) => (
-  <Text italic {...props}>
-    {children}
-  </Text>
-);
-
-export { Text, Bold, Italic };
+export { Text };

@@ -117,7 +117,7 @@ const Divider = ({
   ...props
 }: React.ComponentProps<typeof Box> & { margin?: Size }) => {
   return (
-    <Box {...props} mt={margin} mb={margin}>
+    <Box {...props} mt={margin} mb={margin} w="100%">
       <PaperDivider />
     </Box>
   );

@@ -41,6 +41,7 @@ export type User = {
   name: string;
   avatar: string;
   email: string;
+  subtitle: string;
 };
 
 export type Poll = {
@@ -48,6 +49,7 @@ export type Poll = {
   title: string;
   ownerId: string; // foreign key of user
   avatar: string;
+  open: boolean;
 };
 
 export type UserPoll = {
@@ -67,6 +69,8 @@ const createMockUsers = (count: number): User[] => {
     name: faker.person.fullName(),
     avatar: faker.image.avatar(),
     email: faker.internet.email(),
+    subtitle: faker.lorem.sentence(),
+    verified: faker.datatype.boolean(),
   }));
 };
 
@@ -76,6 +80,7 @@ const createMockPolls = (count: number): Poll[] => {
     title: faker.lorem.sentence(),
     ownerId: getRandomItem(users).id,
     avatar: faker.image.avatar(),
+    open: faker.datatype.boolean(),
   }));
 };
 
@@ -94,17 +99,18 @@ const createMockFriendships = (count: number): Friendship[] => {
 };
 
 const users: User[] = [
-  ...createMockUsers(20),
+  ...createMockUsers(200),
   {
-    id: "1aGZC7neMQfWe1MLKIZA8ldUFoA3",
+    id: "4la4vb2HikWZLPoSHyiGm9XKQSq2",
     name: "Franco May",
-    avatar: getRandomItem(faces),
+    avatar: faker.image.avatar(),
     email: "francomay3@gmail.com",
+    subtitle: "I love to code and build things.",
   },
 ];
-const polls: Poll[] = createMockPolls(20);
-const userPolls: UserPoll[] = createMockUserPolls(20);
-const friendships: Friendship[] = createMockFriendships(20);
+const polls: Poll[] = createMockPolls(25);
+const userPolls: UserPoll[] = createMockUserPolls(600);
+const friendships: Friendship[] = createMockFriendships(2000);
 
 // FUNCTIONS
 export const getFriendDetails = async (id: string): Promise<User | null> => {
@@ -131,4 +137,9 @@ export const getUserPolls = async (userId: string): Promise<Poll[] | null> => {
     .filter((poll) => poll.userId === userId)
     .map((userPoll) => userPoll.pollId);
   return polls.filter((poll) => userPollIds.includes(poll.id));
+};
+
+export const getCurrentUser = async (uid: string): Promise<User | null> => {
+  await wait(delay);
+  return users.find((user) => user.id === uid) || null;
 };
