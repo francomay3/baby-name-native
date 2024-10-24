@@ -21,7 +21,7 @@ const Modal = ({
       onRequestClose={onClose}
       animationType="fade"
     >
-      <Container w="100%" h="100%" p="md" align="stretch">
+      <Container w="100%" h="100%" p="md" align="stretch" bg="background">
         <Row align="center">
           <IconButton icon="arrow-left" onPress={onClose} />
           <Title>{title}</Title>

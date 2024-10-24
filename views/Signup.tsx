@@ -6,6 +6,7 @@ import CredentialsForm from "@/components/CredentialsForm";
 import { Bold, Text } from "@/components/typography";
 import { Button, Card } from "react-native-paper";
 import SignupForm from "@/components/form/SignupForm";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Signup = () => {
   const { user, hasAccess } = useAuth();
@@ -14,12 +15,12 @@ const Signup = () => {
 
   useEffect(() => {
     if (hasAccess) {
-      router.push("/");
+      router.navigate("/");
     }
   }, [user]);
 
   const handleLogin = async () => {
-    router.replace("/login");
+    router.navigate("/login");
   };
 
   const onSubmitSuccess = ({ email }: { email: string }) => {
@@ -28,20 +29,22 @@ const Signup = () => {
 
   if (awaitingVerification) {
     return (
-      <Container center>
-        <Card>
-          <Container center gap="lg">
-            <Text align="center">
-              A verification email has been sent to <Bold>{email}</Bold>. Please
-              click on the link in the email to verify your account, then return
-              to this app and log in!
-            </Text>
-            <Button mode="contained" onPress={handleLogin}>
-              Log In
-            </Button>
-          </Container>
-        </Card>
-      </Container>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Container center>
+          <Card>
+            <Container center gap="lg">
+              <Text align="center">
+                A verification email has been sent to <Bold>{email}</Bold>.
+                Please click on the link in the email to verify your account,
+                then return to this app and log in!
+              </Text>
+              <Button mode="contained" onPress={handleLogin}>
+                Log In
+              </Button>
+            </Container>
+          </Card>
+        </Container>
+      </SafeAreaView>
     );
   }
 

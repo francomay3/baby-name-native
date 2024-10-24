@@ -45,7 +45,7 @@ const Form = <T extends Record<string, any>>({
     >
       {(props: FormikProps<T>) => (
         <Column gap="md" align="center">
-          {errorMessage && <Text c="error">{errorMessage}</Text>}
+          {errorMessage ? <Text c="error">{errorMessage}</Text> : null}
           <Column gap="md" align="stretch" w="100%">
             {React.Children.map(fields, (child) => {
               if (React.isValidElement(child)) {

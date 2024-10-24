@@ -16,12 +16,12 @@ const UserInfo = ({ label, value }: { label: string; value: unknown }) => {
   );
 };
 
-const User = () => {
+const Account = () => {
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
-    router.push("/login");
+    router.navigate("/login");
   };
 
   return (
@@ -37,4 +37,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default Account;

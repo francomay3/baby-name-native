@@ -1,13 +1,11 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, useNavigation } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useTheme } from "react-native-paper";
 import { useAuth } from "@/authentication";
+import TabBar from "@/components/TabBar";
+import { useTheme } from "react-native-paper";
 
-const icon =
-  (name: keyof typeof FontAwesome.glyphMap) =>
-  ({ color }: { color: string }) => (
-    <FontAwesome name={name} size={28} color={color} />
-  );
+// only to get type safety for the icon names
+const icon = (name: keyof typeof FontAwesome.glyphMap) => name;
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -16,48 +14,32 @@ export default function TabLayout() {
   if (!hasAccess) return <Redirect href="/login" />;
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarStyle: {
-          backgroundColor: theme.colors.background,
-          borderTopColor: theme.colors.outline,
-          height: 70,
-          paddingBottom: 5,
-        },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.onSurfaceDisabled,
-        tabBarLabelStyle: {
-          fontSize: 16,
-          fontWeight: "bold",
-        },
-        headerStyle: {
-          backgroundColor: theme.colors.background,
-        },
-        headerTintColor: theme.colors.onBackground,
-        headerTitleStyle: {
-          fontWeight: "bold",
-        },
-      }}
-    >
+    <Tabs tabBar={TabBar} screenOptions={{ headerShown: false }}>
       <Tabs.Screen
         name="polls"
         options={{
           title: "Polls",
-          tabBarIcon: icon("list-ul"),
+          // @ts-ignore
+          icon: icon("list-ul"),
+          color: theme.colors.onPrimary,
         }}
       />
       <Tabs.Screen
         name="friends"
         options={{
           title: "Friends",
-          tabBarIcon: icon("group"),
+          // @ts-ignore
+          icon: icon("group"),
+          color: theme.colors.onPrimary,
         }}
       />
       <Tabs.Screen
-        name="user"
+        name="account"
         options={{
-          title: "User",
-          tabBarIcon: icon("user"),
+          title: "Account",
+          // @ts-ignore
+          icon: icon("user"),
+          color: theme.colors.onPrimary,
         }}
       />
     </Tabs>

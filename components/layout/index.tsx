@@ -1,6 +1,8 @@
 import styled from "styled-components/native";
-import { Divider as PaperDivider } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Divider as PaperDivider, useTheme } from "react-native-paper";
+import { MD3Colors } from "react-native-paper/lib/typescript/types";
+import { PropsWithChildren } from "react";
+import { ScrollView } from "react-native";
 
 const sizeMap = {
   xs: 4,
@@ -61,7 +63,14 @@ const Box = styled.View<{
 
 const Flex = styled(Box)<{
   gap?: Size;
-  justify?: "center" | "start" | "end" | "between" | "around" | "evenly";
+  justify?:
+    | "center"
+    | "start"
+    | "end"
+    | "space-between"
+    | "around"
+    | "evenly"
+    | "flex-end";
   align?: "center" | "start" | "end" | "stretch" | "baseline";
   direction?: "row" | "column" | "row-reverse" | "column-reverse";
 }>`
