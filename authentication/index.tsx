@@ -36,6 +36,7 @@ type Value =
       signIn: signIn;
       signOut: signOut;
       hasAccess: boolean;
+      loading: boolean;
     }
   | undefined;
 
@@ -95,6 +96,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         signUp,
         user,
         hasAccess: user?.emailVerified ?? false,
+        loading,
       }}
     >
       {children}

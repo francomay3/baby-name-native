@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
 import { useAuth } from "@/authentication";
 import { router } from "expo-router";
-import { Container, Flex } from "@/components/layout";
+import { Container } from "@/components/layout";
 import CredentialsForm from "@/components/CredentialsForm";
 import LoginForm from "@/components/form/LoginForm";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Login = () => {
-  const { user, hasAccess } = useAuth();
+  const { hasAccess, loading } = useAuth();
 
   useEffect(() => {
-    if (hasAccess) {
-      router.navigate("/");
+    if (hasAccess && !loading) {
+      router.replace("/");
     }
-  }, [user]);
+  }, [hasAccess, loading]);
 
   const handleSignup = async () => {
     router.navigate("/signup");

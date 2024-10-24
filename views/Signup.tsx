@@ -15,7 +15,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (hasAccess) {
-      router.navigate("/");
+      router.replace("/");
     }
   }, [user]);
 

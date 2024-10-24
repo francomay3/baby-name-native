@@ -1,15 +1,27 @@
+import { StackActions } from "@react-navigation/native";
+import throttle from "../utils/throttle";
 import * as React from "react";
 import { Appbar } from "react-native-paper";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import { router, useNavigation } from "expo-router";
-const Header = (props: NativeStackHeaderProps) => {
-  const title = props.options.title;
-  // @ts-ignore
-  const backTo = router.canGoBack();
+
+const Header = ({
+  navigation,
+  options,
+  route,
+  back,
+}: NativeStackHeaderProps) => {
+  const { title } = options;
+
+  const onGoBack = throttle(() => {
+    navigation.dispatch({
+      ...StackActions.pop(),
+      source: route.key,
+    });
+  }, 50);
 
   return (
     <Appbar.Header elevated>
-      {backTo && <Appbar.BackAction onPress={router.back} />}
+      {back && <Appbar.BackAction onPress={onGoBack} />}
       <Appbar.Content title={title} />
     </Appbar.Header>
   );

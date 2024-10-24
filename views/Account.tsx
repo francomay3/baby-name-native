@@ -21,7 +21,7 @@ const Account = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    router.navigate("/login");
+    router.replace("/login");
   };
 
   return (
