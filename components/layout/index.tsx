@@ -26,7 +26,7 @@ const toUnit = (value?: Size): string => {
 };
 
 const Box = styled.View<{
-  bg?: string;
+  bg?: keyof MD3Colors;
   br?: number;
   h?: Size;
   m?: Size;
@@ -44,7 +44,10 @@ const Box = styled.View<{
   w?: Size;
   flex?: number;
 }>`
-  background-color: ${({ bg }) => bg ?? "transparent"};
+  ${({ bg }) => {
+    const theme = useTheme();
+    return `background-color: ${bg ? theme.colors[bg] : "transparent"};`;
+  }}
   border-radius: ${({ br }) => toUnit(br)};
   height: ${({ h }) => toUnit(h ?? "auto")};
   margin-bottom: ${({ m, mb }) => (mb ? toUnit(mb) : toUnit(m))};

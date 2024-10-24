@@ -20,8 +20,6 @@ const Friends = () => {
   const { hasAccess, user } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  console.log(user?.uid);
-
   const {
     data: friends,
     isLoading,
@@ -36,6 +34,9 @@ const Friends = () => {
   if (error) return <Text>Error fetching friends</Text>;
 
   if (!friends) return null; // This should never happen due to the type guard, but TypeScript needs it
+
+  // TODO: handle case in which there are no friends. dont show the list, show a message and the FAB in the center.
+  const hasFriends = friends.length > 0;
 
   return (
     <>

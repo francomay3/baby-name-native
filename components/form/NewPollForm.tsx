@@ -4,34 +4,33 @@ import { ConnectedTextInput } from "./TextInput";
 import { composeValidators, getFormValidate, required } from "./validators";
 import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
+import { Poll } from "@/database";
 
-type Values = {
-  name: string;
-  description: string;
-};
+type Values = Omit<Poll, "id" | "ownerId">;
 
 const validate = getFormValidate({
-  name: composeValidators(required),
-  description: composeValidators(required),
-});
+  title: composeValidators(required),
+  avatar: composeValidators(required),
+} as Record<keyof Values, any>);
 
-const CreatePoll = async (name: string, description: string) => {
-  console.log(name, description);
+const CreatePoll = async (title: string, avatar: string) => {
+  // TODO: create poll in the database
+  console.log(title, avatar);
 };
 
 const NewPollForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleNewPoll = async ({
-    name,
-    description,
+    title,
+    avatar,
   }: {
-    name: string;
-    description: string;
+    title: string;
+    avatar: string;
   }) => {
     setErrorMessage("");
     try {
-      await CreatePoll(name, description);
+      await CreatePoll(title, avatar);
     } catch (error) {
       if (error instanceof FirebaseError) {
         const errorCode = error.code as keyof typeof errorMessageMap;
@@ -47,11 +46,12 @@ const NewPollForm = () => {
       validate={validate}
       onSubmit={handleNewPoll}
       submitText="Create Poll"
-      initialValues={{ name: "", description: "" }}
+      initialValues={{ title: "", avatar: "" }}
       errorMessage={errorMessage}
     >
-      <ConnectedTextInput name="name" label="Name" />
-      <ConnectedTextInput name="description" label="Description" />
+      <ConnectedTextInput name="title" label="Title" />
+      {/* TODO: Add avatar picker */}
+      <ConnectedTextInput name="avatar" label="Avatar" />
     </Form>
   );
 };

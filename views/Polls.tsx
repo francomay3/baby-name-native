@@ -17,6 +17,7 @@ const PollItem = (poll: Poll) => {
   return (
     <Link key={poll.id} href={`/polls/${poll.id}`}>
       <List.Item
+        // TODO: handle case in which poll title is very long
         title={poll.title}
         left={() => (
           // @ts-ignore
@@ -29,7 +30,7 @@ const PollItem = (poll: Poll) => {
 
 const Polls = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { hasAccess, user } = useAuth();
+  const { user } = useAuth();
 
   const {
     data: polls,
@@ -37,7 +38,8 @@ const Polls = () => {
     error,
   } = useQuery({
     queryKey: ["polls"],
-    queryFn: () => user && getUserPolls(user?.uid),
+    queryFn: () => getUserPolls(user?.uid!),
+    enabled: !!user,
   });
 
   const handleNewPoll = () => {
@@ -50,27 +52,41 @@ const Polls = () => {
   if (!polls) return null; // This should never happen due to the type guard, but TypeScript needs it
 
   const ownedPolls = polls.filter((poll) => poll.ownerId === user?.uid);
-  const invitedPolls = polls.filter((poll) => poll.ownerId !== user?.uid);
+  const contributingPolls = polls.filter((poll) => poll.ownerId !== user?.uid);
+
+  // TODO: handle case in which there are no polls. dont show the list, show a message and the FAB in the center.
+  const hasPolls = polls.length > 0 ?? null;
+  const hasOwnedPolls = ownedPolls.length > 0 ?? null;
+  const hasContributingPolls = contributingPolls.length > 0 ?? null;
+
+  const pollsList = (
+    <ScrollView style={{ flex: 1, width: "100%" }}>
+      {hasOwnedPolls && (
+        <List.Section title="Polls you own">
+          {ownedPolls.map((poll) => (
+            <PollItem key={poll.id} {...poll} />
+          ))}
+        </List.Section>
+      )}
+      {hasContributingPolls && (
+        <List.Section title="Polls you are contributing to">
+          {contributingPolls.map((poll) => (
+            <PollItem key={poll.id} {...poll} />
+          ))}
+        </List.Section>
+      )}
+    </ScrollView>
+  );
 
   return (
     <>
       <Modal visible={isOpen} onClose={onClose} title="New Poll">
         <NewPollForm />
       </Modal>
-      <Container>
-        <ScrollView style={{ flex: 1, width: "100%" }}>
-          <List.Section title="Polls you own">
-            {ownedPolls.map((poll) => (
-              <PollItem key={poll.id} {...poll} />
-            ))}
-          </List.Section>
-          <List.Section title="Polls you are invited to">
-            {invitedPolls.map((poll) => (
-              <PollItem key={poll.id} {...poll} />
-            ))}
-          </List.Section>
-        </ScrollView>
-        <Row w="100%" justify="flex-end">
+      <Container gap="md">
+        {hasPolls && pollsList}
+        {!hasPolls && <Text>You dont have any polls yet!</Text>}
+        <Row w="100%" justify={hasPolls ? "flex-end" : "center"}>
           <FAB icon="plus" onPress={handleNewPoll} label="New Poll" />
         </Row>
       </Container>

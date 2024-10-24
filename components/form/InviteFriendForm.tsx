@@ -19,6 +19,10 @@ const validate = getFormValidate({
 });
 
 const InviteFriend = async (email: string) => {
+  // TODO: send a friend request to the user with the given email.
+  // if the user is already a friend or already received a friend request, do nothing.
+  // if the user does not exist, send an email to the user with the given email.
+  // if the user exists and is not a friend, send a push notification to the wannabe friend.
   console.log(email);
 };
 

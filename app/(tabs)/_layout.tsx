@@ -9,9 +9,9 @@ const icon = (name: keyof typeof FontAwesome.glyphMap) => name;
 
 export default function TabLayout() {
   const theme = useTheme();
-  const { hasAccess } = useAuth();
+  const { hasAccess, loading } = useAuth();
 
-  if (!hasAccess) return <Redirect href="/login" />;
+  if (!hasAccess && !loading) return <Redirect href="/login" />;
 
   return (
     <Tabs tabBar={TabBar} screenOptions={{ headerShown: false }}>
@@ -21,7 +21,6 @@ export default function TabLayout() {
           title: "Polls",
           // @ts-ignore
           icon: icon("list-ul"),
-          color: theme.colors.onPrimary,
         }}
       />
       <Tabs.Screen
@@ -30,7 +29,6 @@ export default function TabLayout() {
           title: "Friends",
           // @ts-ignore
           icon: icon("group"),
-          color: theme.colors.onPrimary,
         }}
       />
       <Tabs.Screen
@@ -39,7 +37,6 @@ export default function TabLayout() {
           title: "Account",
           // @ts-ignore
           icon: icon("user"),
-          color: theme.colors.onPrimary,
         }}
       />
     </Tabs>
