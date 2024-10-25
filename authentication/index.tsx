@@ -18,7 +18,7 @@ import {
   // sendPasswordResetEmail,
 } from "firebase/auth";
 import Loader from "@/components/Loader";
-import { getCurrentUser, User } from "@/database";
+import { getUser, User } from "@/database";
 
 type signUp = (
   name: string,
@@ -65,7 +65,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     await signOutFirebase(auth);
   };
 
-  const signUp: signUp = async (name, email, password) => {
+  // TODO: add name to the sign up maybe?
+  const signUp: signUp = async (_name, email, password) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -86,7 +87,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (googleUsr) => {
-      const newUser = await getCurrentUser(googleUsr?.uid || "");
+      const newUser = await getUser(googleUsr?.uid || "");
       setUser(newUser);
       setGoogleUser(googleUsr);
       if (loading) setLoading(false);

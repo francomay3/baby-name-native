@@ -1,14 +1,12 @@
-import { Redirect, Tabs, useNavigation } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useAuth } from "@/authentication";
 import TabBar from "@/components/TabBar";
-import { useTheme } from "react-native-paper";
 import header from "@/components/Header";
 // only to get type safety for the icon names
 const icon = (name: keyof typeof FontAwesome.glyphMap) => name;
 
 export default function TabLayout() {
-  const theme = useTheme();
   const { hasAccess, loading } = useAuth();
 
   if (!hasAccess && !loading) return <Redirect href="/login" />;

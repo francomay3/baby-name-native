@@ -1,43 +1,14 @@
 import { getRandomItem } from "./utils/array";
 import { faker } from "@faker-js/faker";
 
-const faces = [
-  require("@/assets/images/faces/1.png"),
-  require("@/assets/images/faces/2.png"),
-  require("@/assets/images/faces/3.png"),
-  require("@/assets/images/faces/4.png"),
-  require("@/assets/images/faces/5.png"),
-  require("@/assets/images/faces/6.png"),
-  require("@/assets/images/faces/7.png"),
-  require("@/assets/images/faces/8.png"),
-  require("@/assets/images/faces/9.png"),
-  require("@/assets/images/faces/10.png"),
-  require("@/assets/images/faces/11.png"),
-  require("@/assets/images/faces/12.png"),
-  require("@/assets/images/faces/13.png"),
-  require("@/assets/images/faces/14.png"),
-  require("@/assets/images/faces/15.png"),
-  require("@/assets/images/faces/16.png"),
-  require("@/assets/images/faces/17.png"),
-  require("@/assets/images/faces/18.png"),
-  require("@/assets/images/faces/19.png"),
-  require("@/assets/images/faces/20.png"),
-  require("@/assets/images/faces/21.png"),
-  require("@/assets/images/faces/22.png"),
-  require("@/assets/images/faces/23.png"),
-  require("@/assets/images/faces/24.png"),
-  require("@/assets/images/faces/25.png"),
-  require("@/assets/images/faces/26.png"),
-  require("@/assets/images/faces/27.png"),
-  require("@/assets/images/faces/28.png"),
-];
-
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const delay = 1000;
 
+// TODO: add some extra prepopulated keys like "createdAt"
+
 // TYPES
 export type User = {
-  id: string;
+  id: string; // prepopulated integer
   name: string;
   avatar: string;
   email: string;
@@ -45,7 +16,7 @@ export type User = {
 };
 
 export type Poll = {
-  id: number;
+  id: number; // prepopulated integer
   title: string;
   ownerId: string; // foreign key of user
   avatar: string;
@@ -85,14 +56,14 @@ const createMockPolls = (count: number): Poll[] => {
 };
 
 const createMockUserPolls = (count: number): UserPoll[] => {
-  return Array.from({ length: count }, (_, index) => ({
+  return Array.from({ length: count }, () => ({
     userId: getRandomItem(users).id,
     pollId: getRandomItem(polls).id,
   }));
 };
 
 const createMockFriendships = (count: number): Friendship[] => {
-  return Array.from({ length: count }, (_, index) => ({
+  return Array.from({ length: count }, () => ({
     userId: getRandomItem(users).id,
     friendId: getRandomItem(users).id,
   }));
@@ -112,12 +83,17 @@ const polls: Poll[] = createMockPolls(25);
 const userPolls: UserPoll[] = createMockUserPolls(600);
 const friendships: Friendship[] = createMockFriendships(2000);
 
-// FUNCTIONS
-export const getFriendDetails = async (id: string): Promise<User | null> => {
+// FUNCTIONS CREATE
+export const createPoll = async (
+  _uid: string,
+  _title: string,
+  _avatar: string
+): Promise<void> => {
   await wait(delay);
-  return users.find((user) => user.id === id) || null;
+  return;
 };
 
+// FUNCTIONS READ
 export const getPollDetails = async (id: number): Promise<Poll | null> => {
   await wait(delay);
   return polls.find((poll) => poll.id === id) || null;
@@ -139,7 +115,20 @@ export const getUserPolls = async (userId: string): Promise<Poll[] | null> => {
   return polls.filter((poll) => userPollIds.includes(poll.id));
 };
 
-export const getCurrentUser = async (uid: string): Promise<User | null> => {
+export const getUser = async (uid: string): Promise<User | null> => {
   await wait(delay);
   return users.find((user) => user.id === uid) || null;
 };
+
+// FUNCTIONS UPDATE
+export const updateProfile = async (
+  _uid: string,
+  _name: string,
+  _subtitle: string,
+  _avatar: string
+): Promise<void> => {
+  await wait(delay);
+  return;
+};
+
+// FUNCTIONS DELETE

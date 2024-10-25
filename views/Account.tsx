@@ -4,7 +4,6 @@ import { useAuth } from "@/authentication";
 import { Text } from "@/components/typography";
 import { Avatar, FAB, List } from "react-native-paper";
 import { ScrollView } from "react-native";
-import { faker } from "@faker-js/faker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useTheme } from "react-native-paper";
 import Modal from "@/components/Modal";
@@ -42,7 +41,7 @@ const Account = () => {
     console.log("Rate App");
   };
 
-  const handleContactSupport = () => {
+  const handleContactDeveloper = () => {
     // TODO: implement
     console.log("Contact Support");
   };
@@ -50,16 +49,6 @@ const Account = () => {
   const handleDarkMode = () => {
     // TODO: implement
     console.log("Dark Mode");
-  };
-
-  const handleEditProfile = () => {
-    // TODO: implement
-    /* 
-    profile picture modifiable.
-    display name modifiable.
-    user subtitle modifiable.
-    */
-    console.log("Edit Profile");
   };
 
   return (
@@ -88,8 +77,8 @@ const Account = () => {
           <List.Section title="Feedback">
             <Li onPress={handleRateApp} title="Rate App" icon="star" />
             <Li
-              onPress={handleContactSupport}
-              title="Contact Support"
+              onPress={handleContactDeveloper}
+              title="Contact Developer"
               icon="envelope"
             />
           </List.Section>

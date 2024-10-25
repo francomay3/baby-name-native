@@ -14,11 +14,9 @@ const TabBar = ({
     descriptors[route.key].options.title;
   const getIcon = ({
     route,
-    focused,
     color,
   }: {
     route: Route<string>;
-    focused: boolean;
     color: string;
   }) => {
     const options = descriptors[route.key].options;

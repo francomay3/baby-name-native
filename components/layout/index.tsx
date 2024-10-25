@@ -1,8 +1,6 @@
 import styled from "styled-components/native";
 import { Divider as PaperDivider, useTheme } from "react-native-paper";
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
-import { PropsWithChildren } from "react";
-import { ScrollView } from "react-native";
 
 const sizeMap = {
   xs: 4,

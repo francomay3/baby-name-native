@@ -4,22 +4,19 @@ import { ConnectedTextInput } from "./TextInput";
 import { composeValidators, getFormValidate, required } from "./validators";
 import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
-import { Poll } from "@/database";
+import { createPoll, Poll } from "@/database";
+import { useAuth } from "@/authentication";
 
-type Values = Omit<Poll, "id" | "ownerId">;
+type Values = Omit<Poll, "id" | "ownerId" | "open">;
 
 const validate = getFormValidate({
   title: composeValidators(required),
   avatar: composeValidators(required),
 } as Record<keyof Values, any>);
 
-const CreatePoll = async (title: string, avatar: string) => {
-  // TODO: create poll in the database
-  console.log(title, avatar);
-};
-
 const NewPollForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
+  const { user } = useAuth();
 
   const handleNewPoll = async ({
     title,
@@ -30,7 +27,7 @@ const NewPollForm = () => {
   }) => {
     setErrorMessage("");
     try {
-      await CreatePoll(title, avatar);
+      await createPoll(user?.id!, title, avatar);
     } catch (error) {
       if (error instanceof FirebaseError) {
         const errorCode = error.code as keyof typeof errorMessageMap;

@@ -1,13 +1,13 @@
 import { Text } from "@/components/typography";
-import React from "react";
-import { getFriendDetails } from "@/database";
+import React, { Fragment } from "react";
+import { getUser } from "@/database";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
 import { getUserPolls } from "@/database";
 import { useAuth } from "@/authentication";
 import { Column, Container, Divider } from "@/components/layout";
-import { Avatar, Button, IconButton, List } from "react-native-paper";
+import { Avatar, List } from "react-native-paper";
 import { Pressable } from "react-native";
 
 const FriendDetails = () => {
@@ -20,7 +20,7 @@ const FriendDetails = () => {
     error: friendDetailsError,
   } = useQuery({
     queryKey: ["friend", friendId],
-    queryFn: () => getFriendDetails(friendId),
+    queryFn: () => getUser(friendId),
   });
 
   const {
@@ -47,16 +47,16 @@ const FriendDetails = () => {
   if (!friendDetails || !polls) return null; // This should never happen due to the type guard, but TypeScript needs it
 
   const pollsWithFriend = polls.filter((poll) => poll.ownerId === friendId);
-  // const ownedPolls = polls.filter((poll) => poll.ownerId === user?.id);
-  const ownedPolls = polls;
+  const ownedPolls = polls.filter((poll) => poll.ownerId === user?.id);
 
   const hasPollsWithFriend = pollsWithFriend.length > 0;
   const hasOwnedPolls = ownedPolls.length > 0;
 
+  // TODO: this is getting kinda messy. abstract this out into a component and refactor
   const pollsWithFriendSection = hasPollsWithFriend ? (
     <List.Section title={`Polls with ${friendDetails.name}`}>
       {pollsWithFriend.map((poll) => (
-        <List.Item title={poll.title} />
+        <List.Item key={poll.id} title={poll.title} />
       ))}
     </List.Section>
   ) : (
@@ -72,6 +72,7 @@ const FriendDetails = () => {
       <List.Section style={{ width: "100%" }}>
         {ownedPolls.map((poll) => (
           <List.Item
+            key={poll.id}
             title={poll.title}
             style={{ alignItems: "center", paddingEnd: 0 }}
             left={() => (
@@ -94,13 +95,13 @@ const FriendDetails = () => {
   ) : null;
 
   const sections = [pollsWithFriendSection, ownedPollsSection].reduce(
-    (acc: React.ReactNode[], section) => {
+    (acc: React.ReactNode[], section, i) => {
       const isLast = acc.length === 0;
       const newElement = (
-        <>
+        <Fragment key={i}>
           {section}
           {isLast && <Divider margin="md" />}
-        </>
+        </Fragment>
       );
       return [...acc, newElement];
     },

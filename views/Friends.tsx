@@ -16,7 +16,7 @@ const Friends = () => {
   // TODO: there should be a button to remove friend
   // TODO: a route to view friend profile. it should display what polls the friend and you have in common.
 
-  const { hasAccess, user } = useAuth();
+  const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
@@ -35,6 +35,7 @@ const Friends = () => {
   if (!friends) return null; // This should never happen due to the type guard, but TypeScript needs it
 
   // TODO: handle case in which there are no friends. dont show the list, show a message and the FAB in the center.
+  // @ts-ignore
   const hasFriends = friends.length > 0;
 
   return (
