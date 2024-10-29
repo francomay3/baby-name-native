@@ -1,7 +1,7 @@
 import { Container, Row } from "@/components/layout";
 import { Text } from "@/components/typography";
 import React from "react";
-import { Avatar, FAB, List } from "react-native-paper";
+import { FAB, List } from "react-native-paper";
 import { getUserFriends } from "@/database";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/Loader";
@@ -11,6 +11,7 @@ import InviteFriendForm from "@/components/form/InviteFriendForm";
 import { useAuth } from "@/authentication";
 import { ScrollView } from "react-native";
 import { router } from "expo-router";
+import AvatarPicker from "@/components/AvatarPicker";
 const Friends = () => {
   // TODO: there should be a search icon in the header to search for friends.
   // TODO: there should be a button to remove friend
@@ -51,9 +52,7 @@ const Friends = () => {
                 key={friend.id}
                 title={friend.name}
                 onPress={() => router.push(`/friends/${friend.id}`)}
-                left={() => (
-                  <Avatar.Image size={25} source={{ uri: friend.avatar }} />
-                )}
+                left={() => <AvatarPicker size={25} image={friend.avatar} />}
               />
             ))}
           </List.Section>

@@ -1,10 +1,7 @@
 import { Redirect, Tabs } from "expo-router";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useAuth } from "@/authentication";
 import TabBar from "@/components/TabBar";
 import header from "@/components/Header";
-// only to get type safety for the icon names
-const icon = (name: keyof typeof FontAwesome.glyphMap) => name;
 
 export default function TabLayout() {
   const { hasAccess, loading } = useAuth();
@@ -18,7 +15,7 @@ export default function TabLayout() {
         options={{
           title: "Polls",
           // @ts-ignore
-          icon: icon("list-ul"),
+          icon: "chart-bar",
         }}
       />
       <Tabs.Screen
@@ -26,7 +23,7 @@ export default function TabLayout() {
         options={{
           title: "Friends",
           // @ts-ignore
-          icon: icon("group"),
+          icon: "account-group",
         }}
       />
       <Tabs.Screen
@@ -36,7 +33,7 @@ export default function TabLayout() {
           headerShown: true,
           header,
           // @ts-ignore
-          icon: icon("user"),
+          icon: "account",
         }}
       />
     </Tabs>

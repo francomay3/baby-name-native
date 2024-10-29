@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Formik, FormikProps } from "formik";
 import { Button } from "react-native-paper";
 import { GestureResponderEvent } from "react-native";
-import { Column } from "../layout";
+import { Box, Column } from "../layout";
 import { Text } from "../typography";
 
 const Form = <T extends Record<string, any>>({
@@ -46,14 +46,14 @@ const Form = <T extends Record<string, any>>({
       {(props: FormikProps<T>) => (
         <Column gap="md" align="center">
           {errorMessage ? <Text c="error">{errorMessage}</Text> : null}
-          <Column gap="md" align="stretch" w="100%">
+          <Box w="100%">
             {React.Children.map(fields, (child) => {
               if (React.isValidElement(child)) {
                 return React.cloneElement(child, props);
               }
               return child;
             })}
-          </Column>
+          </Box>
           <Button
             loading={loading}
             mode="contained"

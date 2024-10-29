@@ -2,13 +2,16 @@ import { Column, Container, Divider, Row } from "@/components/layout";
 import React from "react";
 import { useAuth } from "@/authentication";
 import { Text } from "@/components/typography";
-import { Avatar, FAB, List } from "react-native-paper";
-import { ScrollView } from "react-native";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { FAB, List } from "react-native-paper";
+import { Linking, Platform, ScrollView } from "react-native";
+import { Icon } from "react-native-paper";
 import { useTheme } from "react-native-paper";
 import Modal from "@/components/Modal";
 import useDisclosure from "@/hooks/useDisclosure";
 import EditProfileForm from "@/components/form/EditProfileForm";
+import AvatarPicker from "@/components/AvatarPicker";
+import ContactDeveloperForm from "@/components/form/ContactDeveloperForm";
+import { updateUserAvatar } from "@/api";
 
 const Li = ({
   title,
@@ -16,7 +19,7 @@ const Li = ({
   onPress,
 }: {
   title: string;
-  icon: keyof typeof FontAwesome.glyphMap;
+  icon: string;
   onPress: () => void;
 }) => {
   const theme = useTheme();
@@ -24,9 +27,7 @@ const Li = ({
   return (
     <List.Item
       title={title}
-      left={() => (
-        <FontAwesome name={icon} size={20} color={theme.colors.primary} />
-      )}
+      left={() => <Icon source={icon} size={20} color={theme.colors.primary} />}
       onPress={onPress}
     />
   );
@@ -34,16 +35,39 @@ const Li = ({
 
 const Account = () => {
   const { user, signOut } = useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isEditProfileModalOpen,
+    onOpen: onEditProfileModalOpen,
+    onClose: onEditProfileModalClose,
+  } = useDisclosure();
 
-  const handleRateApp = () => {
-    // TODO: implement
-    console.log("Rate App");
-  };
+  const {
+    isOpen: isContactDeveloperModalOpen,
+    onOpen: onContactDeveloperModalOpen,
+    onClose: onContactDeveloperModalClose,
+  } = useDisclosure();
 
-  const handleContactDeveloper = () => {
-    // TODO: implement
-    console.log("Contact Support");
+  const handleRateApp = async () => {
+    const appId = Platform.select({
+      // TODO: add the real ios and android app ids
+      ios: "123456789",
+      android: "com.yourcompany.yourapp",
+    });
+
+    try {
+      const url = Platform.select({
+        ios: `itms-apps://apps.apple.com/app/id${appId}?action=write-review`,
+        android: `market://details?id=${appId}`,
+      });
+
+      const canOpen = await Linking.canOpenURL(url!);
+      if (canOpen) {
+        await Linking.openURL(url!);
+      }
+    } catch (error) {
+      // TODO: implement error handling
+      console.error("Error opening store:", error);
+    }
   };
 
   const handleDarkMode = () => {
@@ -51,40 +75,82 @@ const Account = () => {
     console.log("Dark Mode");
   };
 
+  const handleImageChange = (image: string) => {
+    // TODO: implement error handling
+    updateUserAvatar(user!, image);
+  };
+
   return (
     <>
-      <Modal visible={isOpen} onClose={onClose} title="Edit Profile">
+      <Modal
+        visible={isEditProfileModalOpen}
+        onClose={onEditProfileModalClose}
+        title="Edit Profile"
+      >
         <EditProfileForm />
+      </Modal>
+      <Modal
+        visible={isContactDeveloperModalOpen}
+        onClose={onContactDeveloperModalClose}
+        title="Contact Developer"
+      >
+        <ContactDeveloperForm />
       </Modal>
       <Container>
         <ScrollView style={{ flex: 1, width: "100%" }}>
           <List.Section>
-            <Row justify="space-between" align="center" pl="md" pr="md">
-              <Avatar.Image size={70} source={{ uri: user?.avatar }} />
-              <Column gap="xs">
-                <Text variant="bodyMedium" bold>
-                  {user?.name}
+            <Row
+              w="100%"
+              align="center"
+              justify="space-between"
+              pl="md"
+              pr="md"
+            >
+              <Column gap="md">
+                <Row justify="space-between" align="center" gap="md">
+                  <AvatarPicker
+                    size={70}
+                    image={user?.avatar}
+                    onImageChange={handleImageChange}
+                  />
+                  <Column gap="xs">
+                    <Text variant="bodyMedium" bold>
+                      {user?.name}
+                    </Text>
+                    <Text variant="bodySmall">{user?.email}</Text>
+                  </Column>
+                </Row>
+                <Text italic align="center">
+                  "{user?.subtitle}"
                 </Text>
-                <Text variant="bodySmall">{user?.email}</Text>
               </Column>
-              <FAB icon="pencil" size="small" onPress={onOpen} />
+              <FAB
+                variant="surface"
+                icon="pencil"
+                size="small"
+                onPress={onEditProfileModalOpen}
+              />
             </Row>
           </List.Section>
           <Divider margin="md" />
           <List.Section title="Preferences">
-            <Li onPress={handleDarkMode} title="Dark Mode" icon="moon-o" />
+            <Li
+              onPress={handleDarkMode}
+              title="Dark Mode"
+              icon="theme-light-dark"
+            />
           </List.Section>
           <List.Section title="Feedback">
             <Li onPress={handleRateApp} title="Rate App" icon="star" />
             <Li
-              onPress={handleContactDeveloper}
+              onPress={onContactDeveloperModalOpen}
               title="Contact Developer"
-              icon="envelope"
+              icon="email"
             />
           </List.Section>
           <Divider margin="md" />
           <List.Section>
-            <Li onPress={signOut} title="Log out" icon="sign-out" />
+            <Li onPress={signOut} title="Log out" icon="logout" />
           </List.Section>
         </ScrollView>
       </Container>

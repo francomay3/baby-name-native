@@ -23,7 +23,7 @@ const toUnit = (value?: Size): string => {
   return value;
 };
 
-const Box = styled.View<{
+export interface BoxProps {
   bg?: keyof MD3Colors;
   br?: number;
   h?: Size;
@@ -41,7 +41,9 @@ const Box = styled.View<{
   pt?: Size;
   w?: Size;
   flex?: number;
-}>`
+}
+
+const Box = styled.View<BoxProps>`
   ${({ bg }) => {
     const theme = useTheme();
     return `background-color: ${bg ? theme.colors[bg] : "transparent"};`;
@@ -59,7 +61,7 @@ const Box = styled.View<{
   padding-right: ${({ p, pr }) => (pr ? toUnit(pr) : toUnit(p))};
   padding-top: ${({ p, pt }) => (pt ? toUnit(pt) : toUnit(p))};
   width: ${({ w }) => toUnit(w ?? "auto")};
-  ${({ flex }) => (flex ? `flex: ${flex}` : "")}
+  ${({ flex }) => (flex ? `flex: ${flex};` : "")}
 `;
 
 const Flex = styled(Box)<{

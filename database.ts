@@ -4,8 +4,6 @@ import { faker } from "@faker-js/faker";
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const delay = 1000;
 
-// TODO: add some extra prepopulated keys like "createdAt"
-
 // TYPES
 export type User = {
   id: string; // prepopulated integer
@@ -13,6 +11,7 @@ export type User = {
   avatar: string;
   email: string;
   subtitle: string;
+  createdAt: Date;
 };
 
 export type Poll = {
@@ -21,6 +20,7 @@ export type Poll = {
   ownerId: string; // foreign key of user
   avatar: string;
   open: boolean;
+  createdAt: Date;
 };
 
 export type UserPoll = {
@@ -31,6 +31,7 @@ export type UserPoll = {
 export type Friendship = {
   userId: string; // foreign key of user
   friendId: string; // foreign key of user
+  createdAt: Date;
 };
 
 // MOCKS
@@ -40,8 +41,9 @@ const createMockUsers = (count: number): User[] => {
     name: faker.person.fullName(),
     avatar: faker.image.avatar(),
     email: faker.internet.email(),
-    subtitle: faker.lorem.sentence(),
+    subtitle: faker.person.bio(),
     verified: faker.datatype.boolean(),
+    createdAt: faker.date.past(),
   }));
 };
 
@@ -52,6 +54,7 @@ const createMockPolls = (count: number): Poll[] => {
     ownerId: getRandomItem(users).id,
     avatar: faker.image.avatar(),
     open: faker.datatype.boolean(),
+    createdAt: faker.date.past(),
   }));
 };
 
@@ -66,6 +69,7 @@ const createMockFriendships = (count: number): Friendship[] => {
   return Array.from({ length: count }, () => ({
     userId: getRandomItem(users).id,
     friendId: getRandomItem(users).id,
+    createdAt: faker.date.past(),
   }));
 };
 
@@ -77,6 +81,7 @@ const users: User[] = [
     avatar: faker.image.avatar(),
     email: "francomay3@gmail.com",
     subtitle: "I love to code and build things.",
+    createdAt: faker.date.past(),
   },
 ];
 const polls: Poll[] = createMockPolls(25);
@@ -121,12 +126,12 @@ export const getUser = async (uid: string): Promise<User | null> => {
 };
 
 // FUNCTIONS UPDATE
-export const updateProfile = async (
-  _uid: string,
-  _name: string,
-  _subtitle: string,
-  _avatar: string
-): Promise<void> => {
+export const updateProfile = async (_props: {
+  uid: string;
+  name?: string;
+  subtitle?: string;
+  avatar?: string;
+}): Promise<void> => {
   await wait(delay);
   return;
 };

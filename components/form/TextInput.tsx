@@ -1,9 +1,8 @@
 import React, { ComponentProps } from "react";
 import { Field } from "formik";
-import { TextInput } from "react-native-paper";
+import { TextInput, HelperText } from "react-native-paper";
 import { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
 import { Box, Column } from "@/components/layout";
-import { Text } from "../typography";
 
 type DumbTextInputProps = ComponentProps<typeof TextInput> &
   ComponentProps<typeof Box>;
@@ -46,7 +45,9 @@ export const DumbTextInput = ({
         label={label}
         {...rest}
       />
-      {error && <Text c="error">{error}</Text>}
+      <HelperText type="error" visible={!!error}>
+        {error}
+      </HelperText>
     </Column>
   );
 };

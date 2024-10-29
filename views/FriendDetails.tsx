@@ -7,8 +7,9 @@ import { useLocalSearchParams } from "expo-router";
 import { getUserPolls } from "@/database";
 import { useAuth } from "@/authentication";
 import { Column, Container, Divider } from "@/components/layout";
-import { Avatar, List } from "react-native-paper";
+import { List } from "react-native-paper";
 import { Pressable } from "react-native";
+import AvatarPicker from "@/components/AvatarPicker";
 
 const FriendDetails = () => {
   const { friendId } = useLocalSearchParams<{ friendId: string }>();
@@ -75,9 +76,7 @@ const FriendDetails = () => {
             key={poll.id}
             title={poll.title}
             style={{ alignItems: "center", paddingEnd: 0 }}
-            left={() => (
-              <Avatar.Image size={25} source={{ uri: poll.avatar }} />
-            )}
+            left={() => <AvatarPicker size={25} image={poll.avatar} />}
             right={() => (
               <Pressable
                 style={{ justifyContent: "center" }}
@@ -111,7 +110,7 @@ const FriendDetails = () => {
   return (
     <Container gap="sm">
       <Column align="center" w="100%">
-        <Avatar.Image size={90} source={{ uri: friendDetails.avatar }} />
+        <AvatarPicker size={90} image={friendDetails.avatar} />
         <Text variant="titleLarge" bold mt="sm">
           {friendDetails.name}
         </Text>

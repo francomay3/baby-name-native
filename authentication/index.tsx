@@ -18,7 +18,8 @@ import {
   // sendPasswordResetEmail,
 } from "firebase/auth";
 import Loader from "@/components/Loader";
-import { getUser, User } from "@/database";
+import { getUser, updateProfile, User } from "@/database";
+import { faker } from "@faker-js/faker/locale/en_US";
 
 type signUp = (
   name: string,
@@ -72,6 +73,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       email,
       password
     );
+
+    await updateProfile({
+      uid: userCredential.user.uid,
+      name: faker.person.fullName(),
+      subtitle: faker.person.bio(),
+      avatar: faker.image.avatar(),
+    });
 
     await sendEmailVerification(userCredential.user);
 

@@ -1,6 +1,6 @@
 import { Container, Row } from "@/components/layout";
 import React from "react";
-import { Avatar, FAB, List } from "react-native-paper";
+import { FAB, List } from "react-native-paper";
 import NewPollForm from "@/components/form/NewPollForm";
 import Modal from "@/components/Modal";
 import { useQuery } from "@tanstack/react-query";
@@ -12,12 +12,13 @@ import { Poll } from "@/database";
 import { useAuth } from "@/authentication";
 import { ScrollView } from "react-native";
 import { router } from "expo-router";
+import AvatarPicker from "@/components/AvatarPicker";
 
 const PollItem = (poll: Poll) => {
   return (
     <List.Item
       title={poll.title}
-      left={() => <Avatar.Image size={25} source={{ uri: poll.avatar }} />}
+      left={() => <AvatarPicker size={25} image={poll.avatar} />}
       onPress={() => router.push(`/polls/${poll.id}`)}
     />
   );
