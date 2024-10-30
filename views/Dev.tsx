@@ -1,19 +1,20 @@
 import { Box, Column, Row } from "@/components/layout";
 import { Text } from "@/components/typography";
+import { resetDatabase } from "@/database";
 import React from "react";
 import { ScrollView } from "react-native";
-import { Title, useTheme } from "react-native-paper";
-
+import { useTheme, Button } from "react-native-paper";
+import { useAuth } from "@/authentication";
 const dev = () => {
   const theme = useTheme();
-
+  const { token } = useAuth();
   return (
     <ScrollView
       style={{ width: "100%" }}
       contentContainerStyle={{ alignItems: "center" }}
     >
       <Column gap="sm">
-        <Title>Colors</Title>
+        <Text variant="headlineMedium">Colors</Text>
         <Box>
           {Object.keys(theme.colors).map((key) => (
             <Row
@@ -29,6 +30,7 @@ const dev = () => {
           ))}
         </Box>
       </Column>
+      <Button onPress={() => resetDatabase(token)}>Reset Database</Button>
     </ScrollView>
   );
 };

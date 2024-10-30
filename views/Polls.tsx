@@ -3,18 +3,17 @@ import React from "react";
 import { FAB, List } from "react-native-paper";
 import NewPollForm from "@/components/form/NewPollForm";
 import Modal from "@/components/Modal";
-import { useQuery } from "@tanstack/react-query";
-import { getUserPolls } from "@/database";
-import Loader from "@/components/Loader";
 import { Text } from "@/components/typography";
 import useDisclosure from "@/hooks/useDisclosure";
-import { Poll } from "@/database";
 import { useAuth } from "@/authentication";
 import { ScrollView } from "react-native";
 import { router } from "expo-router";
 import AvatarPicker from "@/components/AvatarPicker";
 
-const PollItem = (poll: Poll) => {
+const PollItem = (poll: any) => {
+  // TODO: handle case in which poll is undefined. maybe just redirect to the polls page. or show a message with a button to go back.
+  if (!poll) return null;
+
   return (
     <List.Item
       title={poll.title}
@@ -28,33 +27,20 @@ const Polls = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useAuth();
 
-  const {
-    data: polls,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["polls"],
-    queryFn: () => getUserPolls(user?.id!),
-    enabled: !!user,
-  });
+  const polls = user?.polls ?? [];
 
-  if (isLoading) return <Loader />;
-  if (error) return <Text>Error fetching polls</Text>;
-
-  if (!polls) return null; // This should never happen due to the type guard, but TypeScript needs it
-
-  const closedPolls = polls.filter((poll) => !poll.open);
-  const openPolls = polls.filter((poll) => poll.open);
-  const ownedPolls = openPolls.filter((poll) => poll.ownerId === user?.id);
-  const contributingPolls = openPolls.filter(
-    (poll) => poll.ownerId !== user?.id
-  );
+  const closedPolls = polls?.filter((poll) => !poll.open) ?? [];
+  const openPolls = polls?.filter((poll) => poll.open) ?? [];
+  const ownedPolls =
+    openPolls?.filter((poll) => poll.ownerId === user?.id) ?? [];
+  const contributingPolls =
+    openPolls?.filter((poll) => poll.ownerId !== user?.id) ?? [];
 
   // TODO: handle case in which there are no polls. dont show the list, show a message and the FAB in the center.
-  const hasPolls = polls.length > 0 ?? null;
-  const hasOwnedPolls = ownedPolls.length > 0 ?? null;
-  const hasContributingPolls = contributingPolls.length > 0 ?? null;
-  const hasClosedPolls = closedPolls.length > 0 ?? null;
+  const hasPolls = polls?.length > 0 ?? null;
+  const hasOwnedPolls = ownedPolls?.length > 0 ?? null;
+  const hasContributingPolls = contributingPolls?.length > 0 ?? null;
+  const hasClosedPolls = closedPolls?.length > 0 ?? null;
 
   const pollsList = (
     <ScrollView style={{ flex: 1, width: "100%" }}>

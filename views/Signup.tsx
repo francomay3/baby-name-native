@@ -32,6 +32,7 @@ const Signup = () => {
   };
 
   const onSubmitSuccess = (cr: { email: string; password: string }) => {
+    console.log("onSubmitSuccess");
     setCredentials(cr);
   };
 

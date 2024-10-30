@@ -43,10 +43,13 @@ const SignupForm = ({
     password: string;
   }) => {
     setErrorMessage("");
+    console.log("signing up");
     await signUp(name, email, password);
+    console.log("signed up successfully");
   };
 
   const onSubmitFailure = (error: unknown) => {
+    console.log("onSubmitFailure", error);
     if (error instanceof FirebaseError) {
       const errorCode = error.code as keyof typeof errorMessageMap;
       setErrorMessage(errorMessageMap[errorCode]);

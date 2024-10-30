@@ -1,10 +1,6 @@
 import { Container, Row } from "@/components/layout";
-import { Text } from "@/components/typography";
 import React from "react";
 import { FAB, List } from "react-native-paper";
-import { getUserFriends } from "@/database";
-import { useQuery } from "@tanstack/react-query";
-import Loader from "@/components/Loader";
 import useDisclosure from "@/hooks/useDisclosure";
 import Modal from "@/components/Modal";
 import InviteFriendForm from "@/components/form/InviteFriendForm";
@@ -12,6 +8,11 @@ import { useAuth } from "@/authentication";
 import { ScrollView } from "react-native";
 import { router } from "expo-router";
 import AvatarPicker from "@/components/AvatarPicker";
+import { useQuery } from "@tanstack/react-query";
+import { getUsers } from "@/api";
+import Loader from "@/components/Loader";
+import { Text } from "@/components/typography";
+
 const Friends = () => {
   // TODO: there should be a search icon in the header to search for friends.
   // TODO: there should be a button to remove friend
@@ -20,24 +21,25 @@ const Friends = () => {
   const { user } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const friends = user?.friendsTo ?? [];
+  // TODO: handle case in which there are no friends. dont show the list, show a message and the FAB in the center.
+  const hasFriends = friends.length > 0;
+
   const {
-    data: friends,
+    data: friendsData,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["friends"],
-    queryFn: () => getUserFriends(user?.id!),
-    enabled: !!user,
+    queryFn: () => getUsers(friends.map((friend) => friend.friendId)),
+    enabled: hasFriends,
   });
 
   if (isLoading) return <Loader />;
   if (error) return <Text>Error fetching friends</Text>;
 
-  if (!friends) return null; // This should never happen due to the type guard, but TypeScript needs it
-
-  // TODO: handle case in which there are no friends. dont show the list, show a message and the FAB in the center.
-  // @ts-ignore
-  const hasFriends = friends.length > 0;
+  // TODO: handle case. I think it should never happen, but just in case.
+  if (!friendsData) return null;
 
   return (
     <>
@@ -47,7 +49,7 @@ const Friends = () => {
       <Container>
         <ScrollView style={{ flex: 1, width: "100%" }}>
           <List.Section title="Friends">
-            {friends.map((friend) => (
+            {friendsData?.map((friend) => (
               <List.Item
                 key={friend.id}
                 title={friend.name}

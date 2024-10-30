@@ -34,7 +34,7 @@ const Li = ({
 };
 
 const Account = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, deleteUser } = useAuth();
   const {
     isOpen: isEditProfileModalOpen,
     onOpen: onEditProfileModalOpen,
@@ -78,6 +78,17 @@ const Account = () => {
   const handleImageChange = (image: string) => {
     // TODO: implement error handling
     updateUserAvatar(user!, image);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (
+      !confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+    await deleteUser();
   };
 
   return (
@@ -151,6 +162,11 @@ const Account = () => {
           <Divider margin="md" />
           <List.Section>
             <Li onPress={signOut} title="Log out" icon="logout" />
+            <Li
+              onPress={handleDeleteAccount}
+              title="Delete Account"
+              icon="delete"
+            />
           </List.Section>
         </ScrollView>
       </Container>

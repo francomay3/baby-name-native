@@ -14,12 +14,17 @@ import {
   signOut as signOutFirebase,
   UserCredential,
   sendEmailVerification,
+  deleteUser as deleteUserFirebase,
   // TODO: add this functionality
   // sendPasswordResetEmail,
 } from "firebase/auth";
 import Loader from "@/components/Loader";
-import { getUser, updateProfile, User } from "@/database";
-import { faker } from "@faker-js/faker/locale/en_US";
+import {
+  createUser,
+  getUser,
+  User,
+  deleteUser as deleteUserDB,
+} from "@/database";
 
 type signUp = (
   name: string,
@@ -31,16 +36,19 @@ type signIn = (
   password: string
 ) => Promise<UserCredential | undefined>;
 type signOut = () => Promise<void>;
+type deleteUser = () => Promise<void>;
 
 type Value =
   | {
-      user: User | null;
+      user: User;
       signUp: signUp;
       signIn: signIn;
       signOut: signOut;
       hasAccess: boolean;
       loading: boolean;
       googleUser: GoogleUser | null;
+      deleteUser: deleteUser;
+      token: string;
     }
   | undefined;
 
@@ -53,12 +61,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // @ts-ignore
+  const token = googleUser?.accessToken;
+
+  const deleteUser: deleteUser = async () => {
+    if (!googleUser) {
+      throw new Error("User not found");
+    }
+    await deleteUserDB(token, googleUser.uid);
+    await deleteUserFirebase(googleUser);
+    setUser(null);
+    setGoogleUser(null);
+  };
+
   const signIn: signIn = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
+    const newUser = await getUser(userCredential.user.uid);
+    setGoogleUser(userCredential.user);
+    setUser(newUser);
     return userCredential;
   };
 
@@ -66,28 +90,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     await signOutFirebase(auth);
   };
 
-  // TODO: add name to the sign up maybe?
-  const signUp: signUp = async (_name, email, password) => {
+  const signUp: signUp = async (name, email, password) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-
-    await updateProfile({
+    await createUser({
       uid: userCredential.user.uid,
-      name: faker.person.fullName(),
-      subtitle: faker.person.bio(),
-      avatar: faker.image.avatar(),
+      name,
+      email: userCredential.user.email!,
     });
-
+    // TODO: after the user clicks on the verification link, we can send a notification to the app to trigger the sign in automatically
     await sendEmailVerification(userCredential.user);
-
-    // TODO: here we need to update the user in our database as well. that includes the name
 
     // Creating a new user account automatically signs them in,
     // but we don't want this behavior as the email is not yet verified.
     // Sign out the user immediately to prevent access before email verification
+    // TODO: i think this is not necessary. we have "isVerified" in the user object which we can check. we should protect the route with that. also in the BE we have that so we can protect the DB.
     await signOut();
 
     return userCredential;
@@ -95,9 +115,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (googleUsr) => {
-      const newUser = await getUser(googleUsr?.uid || "");
-      setUser(newUser);
-      setGoogleUser(googleUsr);
+      // @ts-ignore
+      if (googleUsr) {
+        const newUser = await getUser(googleUsr?.uid!);
+        setUser(newUser);
+        setGoogleUser(googleUsr);
+      } else {
+        setUser(null);
+        setGoogleUser(null);
+      }
       if (loading) setLoading(false);
     });
     return unsubscribe;
@@ -113,8 +139,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         signUp,
         user,
         googleUser,
-        hasAccess: googleUser?.emailVerified ?? false,
+        hasAccess: (googleUser?.emailVerified && user) ?? false,
         loading,
+        deleteUser,
+        token,
       }}
     >
       {children}

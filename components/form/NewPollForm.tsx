@@ -4,10 +4,13 @@ import { ConnectedTextInput } from "./TextInput";
 import { composeValidators, getFormValidate, required } from "./validators";
 import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
-import { createPoll, Poll } from "@/database";
+import { createPoll } from "@/database";
 import { useAuth } from "@/authentication";
 
-type Values = Omit<Poll, "id" | "ownerId" | "open">;
+type Values = {
+  title: string;
+  avatar: string;
+};
 
 const validate = getFormValidate({
   title: composeValidators(required),
@@ -18,13 +21,7 @@ const NewPollForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { user } = useAuth();
 
-  const handleNewPoll = async ({
-    title,
-    avatar,
-  }: {
-    title: string;
-    avatar: string;
-  }) => {
+  const handleNewPoll = async ({ title, avatar }: Values) => {
     setErrorMessage("");
     try {
       await createPoll(user?.id!, title, avatar);

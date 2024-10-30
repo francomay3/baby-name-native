@@ -33,6 +33,12 @@
         {
           "photosPermission": "The app accesses your photos to be used for avatars."
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": ["node_modules/@expo-google-fonts/inter/Inter_900Black.ttf"]
+        }
       ]
     ],
     "experiments": {

@@ -1,7 +1,8 @@
 import React from "react";
-import { IconButton, Title } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import { Modal as RNModal } from "react-native";
 import { Container, Row } from "./layout";
+import { Text } from "./typography";
 
 const Modal = ({
   visible,
@@ -24,7 +25,7 @@ const Modal = ({
       <Container w="100%" h="100%" p="md" align="stretch" bg="background">
         <Row align="center">
           <IconButton icon="arrow-left" onPress={onClose} />
-          <Title>{title}</Title>
+          <Text variant="headlineMedium">{title}</Text>
         </Row>
         {children}
       </Container>

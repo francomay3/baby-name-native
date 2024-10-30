@@ -4,7 +4,6 @@ import { getUser } from "@/database";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
-import { getUserPolls } from "@/database";
 import { useAuth } from "@/authentication";
 import { Column, Container, Divider } from "@/components/layout";
 import { List } from "react-native-paper";
@@ -13,24 +12,15 @@ import AvatarPicker from "@/components/AvatarPicker";
 
 const FriendDetails = () => {
   const { friendId } = useLocalSearchParams<{ friendId: string }>();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const {
     data: friendDetails,
-    isLoading: friendDetailsLoading,
-    error: friendDetailsError,
+    isLoading,
+    error,
   } = useQuery({
     queryKey: ["friend", friendId],
-    queryFn: () => getUser(friendId),
-  });
-
-  const {
-    data: polls,
-    isLoading: pollsLoading,
-    error: pollsError,
-  } = useQuery({
-    queryKey: ["polls", user?.id],
-    queryFn: () => getUserPolls(user?.id!),
+    queryFn: () => getUser(token, friendId),
   });
 
   const handleSendInvite = (pollId: number) => {
@@ -39,16 +29,19 @@ const FriendDetails = () => {
     console.log("send invite", pollId);
   };
 
-  const loading = friendDetailsLoading || pollsLoading;
-  const error = friendDetailsError || pollsError;
-
-  if (loading) return <Loader />;
+  if (isLoading) return <Loader />;
   if (error) return <Text>Error fetching friend details</Text>;
+  // TODO: handle case. I think it should never happen, but just in case.
+  if (!friendDetails) return null;
+  const userPolls = user?.polls;
+  const friendPolls = friendDetails?.polls;
 
-  if (!friendDetails || !polls) return null; // This should never happen due to the type guard, but TypeScript needs it
-
-  const pollsWithFriend = polls.filter((poll) => poll.ownerId === friendId);
-  const ownedPolls = polls.filter((poll) => poll.ownerId === user?.id);
+  const pollsWithFriend =
+    userPolls?.filter((poll) =>
+      friendPolls?.some((friendPoll) => friendPoll.id === poll.id)
+    ) ?? [];
+  const ownedPolls =
+    user?.polls.filter((poll) => poll.ownerId === user?.id) ?? [];
 
   const hasPollsWithFriend = pollsWithFriend.length > 0;
   const hasOwnedPolls = ownedPolls.length > 0;

@@ -1,139 +1,110 @@
-import { getRandomItem } from "./utils/array";
 import { faker } from "@faker-js/faker";
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const delay = 1000;
+// HELPER FUNCTIONS
+// TODO: not all functions should be post. refactor this...
+export const POST = async (
+  endpoint: string,
+  token: string | null,
+  args?: Record<string, any>
+) => {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
 
-// TYPES
-export type User = {
-  id: string; // prepopulated integer
-  name: string;
-  avatar: string;
-  email: string;
-  subtitle: string;
-  createdAt: Date;
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${backendUrl}/${endpoint}`, {
+    method: "POST",
+    headers,
+    body: args ? JSON.stringify(args) : undefined,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
 };
-
-export type Poll = {
-  id: number; // prepopulated integer
-  title: string;
-  ownerId: string; // foreign key of user
-  avatar: string;
-  open: boolean;
-  createdAt: Date;
-};
-
-export type UserPoll = {
-  userId: string; // foreign key of user
-  pollId: number; // foreign key of poll
-};
-
-export type Friendship = {
-  userId: string; // foreign key of user
-  friendId: string; // foreign key of user
-  createdAt: Date;
-};
-
-// MOCKS
-const createMockUsers = (count: number): User[] => {
-  return Array.from({ length: count }, () => ({
-    id: faker.string.uuid(),
-    name: faker.person.fullName(),
-    avatar: faker.image.avatar(),
-    email: faker.internet.email(),
-    subtitle: faker.person.bio(),
-    verified: faker.datatype.boolean(),
-    createdAt: faker.date.past(),
-  }));
-};
-
-const createMockPolls = (count: number): Poll[] => {
-  return Array.from({ length: count }, (_, index) => ({
-    id: index + 1,
-    title: faker.lorem.sentence(),
-    ownerId: getRandomItem(users).id,
-    avatar: faker.image.avatar(),
-    open: faker.datatype.boolean(),
-    createdAt: faker.date.past(),
-  }));
-};
-
-const createMockUserPolls = (count: number): UserPoll[] => {
-  return Array.from({ length: count }, () => ({
-    userId: getRandomItem(users).id,
-    pollId: getRandomItem(polls).id,
-  }));
-};
-
-const createMockFriendships = (count: number): Friendship[] => {
-  return Array.from({ length: count }, () => ({
-    userId: getRandomItem(users).id,
-    friendId: getRandomItem(users).id,
-    createdAt: faker.date.past(),
-  }));
-};
-
-const users: User[] = [
-  ...createMockUsers(200),
-  {
-    id: "4la4vb2HikWZLPoSHyiGm9XKQSq2",
-    name: "Franco May",
-    avatar: faker.image.avatar(),
-    email: "francomay3@gmail.com",
-    subtitle: "I love to code and build things.",
-    createdAt: faker.date.past(),
-  },
-];
-const polls: Poll[] = createMockPolls(25);
-const userPolls: UserPoll[] = createMockUserPolls(600);
-const friendships: Friendship[] = createMockFriendships(2000);
 
 // FUNCTIONS CREATE
 export const createPoll = async (
-  _uid: string,
-  _title: string,
-  _avatar: string
+  token: string,
+  uid: string,
+  title: string,
+  avatar?: string
 ): Promise<void> => {
-  await wait(delay);
-  return;
+  await POST("create-poll", token, {
+    title,
+    id: uid,
+    avatar: avatar || faker.image.avatar(),
+  });
+};
+
+export const createUser = async ({
+  uid,
+  name,
+  avatar,
+  email,
+  subtitle,
+}: {
+  uid: string;
+  name?: string;
+  avatar?: string;
+  email: string;
+  subtitle?: string;
+}): Promise<void> => {
+  await POST("create-user", null, {
+    uid,
+    name: name || faker.person.fullName(),
+    avatar: avatar || faker.image.avatar(),
+    email,
+    subtitle: subtitle || faker.person.bio(),
+  });
 };
 
 // FUNCTIONS READ
-export const getPollDetails = async (id: number): Promise<Poll | null> => {
-  await wait(delay);
-  return polls.find((poll) => poll.id === id) || null;
+export const getPollDetails = async (token: string, pollId: number) => {
+  return await POST("get-poll-details", token, { pollId });
 };
 
-export const getUserFriends = async (userId: string): Promise<User[]> => {
-  await wait(delay);
-  const friendIds = friendships
-    .filter((friendship) => friendship.userId === userId)
-    .map((friendship) => friendship.friendId);
-  return users.filter((user) => friendIds.includes(user.id));
+export const getUser = async (uid: string) => {
+  return await POST("get-user", null, { uid });
 };
+// TODO: fix this
+export type User = any;
 
-export const getUserPolls = async (userId: string): Promise<Poll[] | null> => {
-  await wait(delay);
-  const userPollIds = userPolls
-    .filter((poll) => poll.userId === userId)
-    .map((userPoll) => userPoll.pollId);
-  return polls.filter((poll) => userPollIds.includes(poll.id));
+export const getUsers = async (token: string, uids: string[]) => {
+  return await POST("get-users", token, { uids });
 };
-
-export const getUser = async (uid: string): Promise<User | null> => {
-  await wait(delay);
-  return users.find((user) => user.id === uid) || null;
-};
+// TODO: fix this
+export type Users = any;
 
 // FUNCTIONS UPDATE
-export const updateProfile = async (_props: {
+export const updateProfile = async ({
+  token,
+  uid,
+  name,
+  subtitle,
+  avatar,
+}: {
+  token: string;
   uid: string;
   name?: string;
   subtitle?: string;
   avatar?: string;
 }): Promise<void> => {
-  await wait(delay);
-  return;
+  await POST("update-profile", token, { uid, name, subtitle, avatar });
 };
 
 // FUNCTIONS DELETE
+export const deleteUser = async (token: string, uid: string): Promise<void> => {
+  await POST("delete-user", token, { uid });
+};
+
+export const resetDatabase = async (token: string): Promise<void> => {
+  await POST("reset-database", token, {});
+};

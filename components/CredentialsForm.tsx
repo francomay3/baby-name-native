@@ -1,7 +1,7 @@
 import React from "react";
 import { Column, Row, Divider, Box } from "@/components/layout";
 import { Image } from "react-native";
-import { Button, Title } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { Text } from "@/components/typography";
 
 const logo = require("@/assets/images/faces/1.png");
@@ -23,7 +23,7 @@ export default function CredentialsForm({
   return (
     <Column w="100%" mw="350px" align="center" gap="md">
       <Row align="center" justify="center" gap="md" w="100%">
-        <Title>{title}</Title>
+        <Text variant="headlineMedium">{title}</Text>
         <Image
           source={logo}
           style={{ borderRadius: 9999, width: 54, height: 54 }}
