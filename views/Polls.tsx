@@ -9,8 +9,9 @@ import { useAuth } from "@/authentication";
 import { ScrollView } from "react-native";
 import { router } from "expo-router";
 import AvatarPicker from "@/components/AvatarPicker";
+import { Poll } from "@/types";
 
-const PollItem = (poll: any) => {
+const PollItem = (poll: Poll) => {
   // TODO: handle case in which poll is undefined. maybe just redirect to the polls page. or show a message with a button to go back.
   if (!poll) return null;
 
@@ -25,7 +26,12 @@ const PollItem = (poll: any) => {
 
 const Polls = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { user } = useAuth();
+  const { user, refetch } = useAuth();
+
+  const handleNewPollSuccess = () => {
+    onClose();
+    refetch();
+  };
 
   const polls = user?.polls ?? [];
 
@@ -71,7 +77,7 @@ const Polls = () => {
   return (
     <>
       <Modal visible={isOpen} onClose={onClose} title="New Poll">
-        <NewPollForm />
+        <NewPollForm onSuccess={handleNewPollSuccess} />
       </Modal>
       <Container gap="md">
         {hasPolls && pollsList}

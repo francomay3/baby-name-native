@@ -18,22 +18,24 @@ const Friends = () => {
   // TODO: there should be a button to remove friend
   // TODO: a route to view friend profile. it should display what polls the friend and you have in common.
 
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const friends = user?.friendsTo ?? [];
   // TODO: handle case in which there are no friends. dont show the list, show a message and the FAB in the center.
   const hasFriends = friends.length > 0;
 
-  const {
-    data: friendsData,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["friends"],
-    queryFn: () => getUsers(friends.map((friend) => friend.friendId)),
+    queryFn: () =>
+      getUsers(
+        token,
+        friends.map((friend) => friend.friendId)
+      ),
     enabled: hasFriends,
   });
+
+  const friendsData = data?.data;
 
   if (isLoading) return <Loader />;
   if (error) return <Text>Error fetching friends</Text>;

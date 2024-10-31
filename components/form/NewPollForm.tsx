@@ -14,17 +14,20 @@ type Values = {
 
 const validate = getFormValidate({
   title: composeValidators(required),
-  avatar: composeValidators(required),
 } as Record<keyof Values, any>);
 
-const NewPollForm = () => {
+const NewPollForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [errorMessage, setErrorMessage] = useState("");
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const handleNewPoll = async ({ title, avatar }: Values) => {
     setErrorMessage("");
     try {
-      await createPoll(user?.id!, title, avatar);
+      if (!user?.id) {
+        throw new Error("User ID not provided");
+      }
+      await createPoll(token, user.id, title, avatar);
+      onSuccess();
     } catch (error) {
       if (error instanceof FirebaseError) {
         const errorCode = error.code as keyof typeof errorMessageMap;

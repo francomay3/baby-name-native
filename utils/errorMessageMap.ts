@@ -99,7 +99,7 @@ export default {
   "auth/user-cancelled": "User cancelled.",
   "auth/user-mismatch": "User mismatch.",
   "auth/user-signed-out": "User signed out.",
-  "auth/weak-password": "Weak password.",
+  "auth/weak-password": "Weak password. Must be at least 6 characters.",
   "auth/web-storage-unsupported": "Web storage unsupported.",
   "auth/already-initialized": "Already initialized.",
   "auth/recaptcha-not-enabled": "Recaptcha not enabled.",

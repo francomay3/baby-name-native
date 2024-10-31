@@ -1,4 +1,4 @@
-import { User } from "@/database";
+import { User } from "@/types";
 
 const delay = () => new Promise((resolve) => setTimeout(resolve, 1000));
 

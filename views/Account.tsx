@@ -34,7 +34,7 @@ const Li = ({
 };
 
 const Account = () => {
-  const { user, signOut, deleteUser } = useAuth();
+  const { user, signOut, deleteUser, refetch } = useAuth();
   const {
     isOpen: isEditProfileModalOpen,
     onOpen: onEditProfileModalOpen,
@@ -59,11 +59,13 @@ const Account = () => {
         ios: `itms-apps://apps.apple.com/app/id${appId}?action=write-review`,
         android: `market://details?id=${appId}`,
       });
+      if (!url) throw new Error("No URL found");
 
-      const canOpen = await Linking.canOpenURL(url!);
-      if (canOpen) {
-        await Linking.openURL(url!);
-      }
+      const canOpen = await Linking.canOpenURL(url);
+
+      if (!canOpen) throw new Error("Cannot open URL");
+
+      await Linking.openURL(url);
     } catch (error) {
       // TODO: implement error handling
       console.error("Error opening store:", error);
@@ -91,6 +93,11 @@ const Account = () => {
     await deleteUser();
   };
 
+  const handleEditProfileSuccess = () => {
+    onEditProfileModalClose();
+    refetch();
+  };
+
   return (
     <>
       <Modal
@@ -98,7 +105,7 @@ const Account = () => {
         onClose={onEditProfileModalClose}
         title="Edit Profile"
       >
-        <EditProfileForm />
+        <EditProfileForm onSuccess={handleEditProfileSuccess} />
       </Modal>
       <Modal
         visible={isContactDeveloperModalOpen}

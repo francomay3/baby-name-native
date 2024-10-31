@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { Res, User, Users } from "./types";
 
 // HELPER FUNCTIONS
 // TODO: not all functions should be post. refactor this...
@@ -39,7 +40,7 @@ export const createPoll = async (
 ): Promise<void> => {
   await POST("create-poll", token, {
     title,
-    id: uid,
+    uid,
     avatar: avatar || faker.image.avatar(),
   });
 };
@@ -71,17 +72,15 @@ export const getPollDetails = async (token: string, pollId: number) => {
   return await POST("get-poll-details", token, { pollId });
 };
 
-export const getUser = async (uid: string) => {
+type GetUser = (uid: string) => Res<User>;
+export const getUser: GetUser = async (uid) => {
   return await POST("get-user", null, { uid });
 };
-// TODO: fix this
-export type User = any;
 
-export const getUsers = async (token: string, uids: string[]) => {
+type GetUsers = (token: string, uids: string[]) => Res<Users>;
+export const getUsers: GetUsers = async (token, uids) => {
   return await POST("get-users", token, { uids });
 };
-// TODO: fix this
-export type Users = any;
 
 // FUNCTIONS UPDATE
 export const updateProfile = async ({

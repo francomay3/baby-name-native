@@ -12,16 +12,14 @@ import AvatarPicker from "@/components/AvatarPicker";
 
 const FriendDetails = () => {
   const { friendId } = useLocalSearchParams<{ friendId: string }>();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
-  const {
-    data: friendDetails,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["friend", friendId],
-    queryFn: () => getUser(token, friendId),
+    queryFn: () => getUser(friendId),
   });
+
+  const friendDetails = data?.data;
 
   const handleSendInvite = (pollId: number) => {
     // TODO: Send invite to friend. while the invite is pending, show a loader besides the send invite text.

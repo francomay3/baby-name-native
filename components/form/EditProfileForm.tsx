@@ -12,9 +12,9 @@ import { Text } from "../typography";
 
 type Values = { name: string; subtitle: string };
 
-const EditProfileForm = () => {
+const EditProfileForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [errorMessage, setErrorMessage] = useState("");
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const handleEditProfile = async ({
     name,
@@ -25,7 +25,11 @@ const EditProfileForm = () => {
   }) => {
     setErrorMessage("");
     try {
-      await updateProfile({ uid: user?.id!, name, subtitle });
+      if (!user?.id) {
+        throw new Error("User ID not provided");
+      }
+      await updateProfile({ token, uid: user.id, name, subtitle });
+      onSuccess();
     } catch (error) {
       if (error instanceof FirebaseError) {
         const errorCode = error.code as keyof typeof errorMessageMap;

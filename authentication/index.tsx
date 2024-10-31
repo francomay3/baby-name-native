@@ -19,12 +19,8 @@ import {
   // sendPasswordResetEmail,
 } from "firebase/auth";
 import Loader from "@/components/Loader";
-import {
-  createUser,
-  getUser,
-  User,
-  deleteUser as deleteUserDB,
-} from "@/database";
+import { createUser, getUser, deleteUser as deleteUserDB } from "@/database";
+import { User } from "@/types";
 
 type signUp = (
   name: string,
@@ -40,7 +36,7 @@ type deleteUser = () => Promise<void>;
 
 type Value =
   | {
-      user: User;
+      user: User | null;
       signUp: signUp;
       signIn: signIn;
       signOut: signOut;
@@ -49,6 +45,7 @@ type Value =
       googleUser: GoogleUser | null;
       deleteUser: deleteUser;
       token: string;
+      refetch: () => Promise<void>;
     }
   | undefined;
 
@@ -68,10 +65,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (!googleUser) {
       throw new Error("User not found");
     }
+
     await deleteUserDB(token, googleUser.uid);
     await deleteUserFirebase(googleUser);
+
     setUser(null);
     setGoogleUser(null);
+  };
+
+  const refetch = async () => {
+    const newUser = await getUser(googleUser?.uid!);
+    setUser(newUser.data);
   };
 
   const signIn: signIn = async (email, password) => {
@@ -82,7 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     );
     const newUser = await getUser(userCredential.user.uid);
     setGoogleUser(userCredential.user);
-    setUser(newUser);
+    setUser(newUser.data);
     return userCredential;
   };
 
@@ -118,7 +122,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       // @ts-ignore
       if (googleUsr) {
         const newUser = await getUser(googleUsr?.uid!);
-        setUser(newUser);
+        setUser(newUser.data);
         setGoogleUser(googleUsr);
       } else {
         setUser(null);
@@ -139,10 +143,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         signUp,
         user,
         googleUser,
-        hasAccess: (googleUser?.emailVerified && user) ?? false,
+        hasAccess: (googleUser?.emailVerified && !!user) ?? false,
         loading,
         deleteUser,
         token,
+        refetch,
       }}
     >
       {children}

@@ -24,7 +24,7 @@ const dev = () => {
               gap="sm"
               w="100%"
             >
-              <Box w={30} h={30} bg={key as any} />
+              <Box w={30} h={30} bg={key as keyof typeof theme.colors} />
               <Text>{key}</Text>
             </Row>
           ))}

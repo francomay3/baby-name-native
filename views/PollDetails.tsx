@@ -4,17 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 import { getPollDetails } from "@/database";
 import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
+import { useAuth } from "@/authentication";
 
 const PollDetails = () => {
+  const { token } = useAuth();
   const { pollId } = useLocalSearchParams<{ pollId: string }>();
-  const {
-    data: poll,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["poll", pollId],
-    queryFn: () => getPollDetails(Number(pollId)),
+    queryFn: () => getPollDetails(token, Number(pollId)),
   });
+
+  const poll = data?.data;
 
   if (isLoading) return <Loader />;
   if (error) return <Text>Error fetching poll details</Text>;
