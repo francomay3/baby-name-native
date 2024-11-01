@@ -5,7 +5,7 @@ import NewPollForm from "@/components/form/NewPollForm";
 import Modal from "@/components/Modal";
 import { Text } from "@/components/typography";
 import useDisclosure from "@/hooks/useDisclosure";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 import { ScrollView } from "react-native";
 import { router } from "expo-router";
 import AvatarPicker from "@/components/AvatarPicker";

@@ -4,7 +4,7 @@ import { resetDatabase } from "@/api";
 import React from "react";
 import { ScrollView } from "react-native";
 import { useTheme, Button } from "react-native-paper";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 const dev = () => {
   const theme = useTheme();
   const { token } = useAuth();

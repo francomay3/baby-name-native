@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPollDetails } from "@/api";
 import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 
 const PollDetails = () => {
   const { token } = useAuth();

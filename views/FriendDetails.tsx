@@ -4,7 +4,7 @@ import { getUser } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 import { Column, Container, Divider } from "@/components/layout";
 import { List } from "react-native-paper";
 import { Pressable } from "react-native";

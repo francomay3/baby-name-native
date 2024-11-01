@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { AuthProvider } from "@/authentication";
+import { AuthProvider } from "@/providers/auth";
 import { PaperProvider } from "react-native-paper";
 import theme from "@/utils/theme";
 import { useColorScheme } from "react-native";
@@ -8,6 +8,7 @@ import header from "@/components/Header";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
+import { MessageProvider } from "@/providers/message";
 
 const queryClient = new QueryClient();
 SplashScreen.preventAutoHideAsync();
@@ -32,20 +33,25 @@ export default function TabLayout() {
   }
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <PaperProvider theme={currentTheme}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: currentTheme.colors.surface },
-            }}
-          >
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="dev" options={{ headerShown: true, header }} />
-          </Stack>
-        </PaperProvider>
-      </AuthProvider>
+      <PaperProvider theme={currentTheme}>
+        <MessageProvider>
+          <AuthProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: currentTheme.colors.surface },
+              }}
+            >
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen
+                name="dev"
+                options={{ headerShown: true, header }}
+              />
+            </Stack>
+          </AuthProvider>
+        </MessageProvider>
+      </PaperProvider>
     </QueryClientProvider>
   );
 }

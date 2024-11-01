@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 import { router } from "expo-router";
 import { Container } from "@/components/layout";
 import CredentialsForm from "@/components/CredentialsForm";
@@ -22,13 +22,8 @@ const Signup = () => {
 
   const handleLogin = async () => {
     setLoading(true);
-    try {
-      await signIn(credentials.email, credentials.password);
-    } catch (error) {
-      router.navigate("/login");
-    } finally {
-      setLoading(false);
-    }
+    await signIn(credentials.email, credentials.password);
+    setLoading(false);
   };
 
   const onSubmitSuccess = (cr: { email: string; password: string }) => {

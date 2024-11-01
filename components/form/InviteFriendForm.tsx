@@ -1,5 +1,5 @@
 import Form from "./Form";
-import React, { useState } from "react";
+import React from "react";
 import { ConnectedTextInput } from "./TextInput";
 import {
   composeValidators,
@@ -7,8 +7,6 @@ import {
   getFormValidate,
   required,
 } from "./validators";
-import { FirebaseError } from "firebase/app";
-import errorMessageMap from "@/utils/errorMessageMap";
 
 type Values = {
   email: string;
@@ -27,20 +25,8 @@ const InviteFriend = async (email: string) => {
 };
 
 const InviteFriendForm = () => {
-  const [errorMessage, setErrorMessage] = useState("");
-
   const handleInviteFriend = async ({ email }: { email: string }) => {
-    setErrorMessage("");
-    try {
-      await InviteFriend(email);
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        const errorCode = error.code as keyof typeof errorMessageMap;
-        setErrorMessage(errorMessageMap[errorCode]);
-      } else {
-        setErrorMessage(errorMessageMap["unknown"]);
-      }
-    }
+    await InviteFriend(email);
   };
 
   return (
@@ -49,7 +35,6 @@ const InviteFriendForm = () => {
       onSubmit={handleInviteFriend}
       submitText="Send Invite"
       initialValues={{ email: "" }}
-      errorMessage={errorMessage}
     >
       <ConnectedTextInput name="email" label="Email" />
     </Form>

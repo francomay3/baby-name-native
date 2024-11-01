@@ -1,10 +1,9 @@
 import { Column, Container, Divider, Row } from "@/components/layout";
 import React from "react";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 import { Text } from "@/components/typography";
 import { FAB, List } from "react-native-paper";
 import { Linking, Platform, ScrollView } from "react-native";
-import { Icon } from "react-native-paper";
 import { useTheme } from "react-native-paper";
 import Modal from "@/components/Modal";
 import useDisclosure from "@/hooks/useDisclosure";
@@ -12,6 +11,7 @@ import EditProfileForm from "@/components/form/EditProfileForm";
 import AvatarPicker from "@/components/AvatarPicker";
 import ContactDeveloperForm from "@/components/form/ContactDeveloperForm";
 import { updateProfile } from "@/api";
+import { useMessage } from "@/providers/message";
 
 const Li = ({
   title,
@@ -36,7 +36,7 @@ const Li = ({
 const Account = () => {
   const { user, signOut, deleteUser, refetch, token } = useAuth();
   const theme = useTheme();
-
+  const { errorBoundary } = useMessage();
   const {
     isOpen: isEditProfileModalOpen,
     onOpen: onEditProfileModalOpen,
@@ -56,7 +56,7 @@ const Account = () => {
       android: "com.yourcompany.yourapp",
     });
 
-    try {
+    await errorBoundary(async () => {
       const url = Platform.select({
         ios: `itms-apps://apps.apple.com/app/id${appId}?action=write-review`,
         android: `market://details?id=${appId}`,
@@ -68,10 +68,7 @@ const Account = () => {
       if (!canOpen) throw new Error("Cannot open URL");
 
       await Linking.openURL(url);
-    } catch (error) {
-      // TODO: implement error handling
-      console.error("Error opening store:", error);
-    }
+    });
   };
 
   const handleDarkMode = () => {
@@ -80,9 +77,10 @@ const Account = () => {
   };
 
   const handleImageChange = async (image: string) => {
-    // TODO: implement error handling
-    await updateProfile({ token, uid: user!.id, avatar: image });
-    refetch();
+    await errorBoundary(async () => {
+      await updateProfile({ token, uid: user!.id, avatar: image });
+      refetch();
+    });
   };
 
   const handleDeleteAccount = async () => {
@@ -93,7 +91,9 @@ const Account = () => {
     ) {
       return;
     }
-    await deleteUser();
+    await errorBoundary(async () => {
+      await deleteUser();
+    });
   };
 
   const handleEditProfileSuccess = () => {
@@ -103,20 +103,6 @@ const Account = () => {
 
   return (
     <>
-      <Modal
-        visible={isEditProfileModalOpen}
-        onClose={onEditProfileModalClose}
-        title="Edit Profile"
-      >
-        <EditProfileForm onSuccess={handleEditProfileSuccess} />
-      </Modal>
-      <Modal
-        visible={isContactDeveloperModalOpen}
-        onClose={onContactDeveloperModalClose}
-        title="Contact Developer"
-      >
-        <ContactDeveloperForm />
-      </Modal>
       <Container>
         <ScrollView style={{ flex: 1, width: "100%" }}>
           <List.Section>
@@ -185,6 +171,20 @@ const Account = () => {
           </List.Section>
         </ScrollView>
       </Container>
+      <Modal
+        visible={isEditProfileModalOpen}
+        onClose={onEditProfileModalClose}
+        title="Edit Profile"
+      >
+        <EditProfileForm onSuccess={handleEditProfileSuccess} />
+      </Modal>
+      <Modal
+        visible={isContactDeveloperModalOpen}
+        onClose={onContactDeveloperModalClose}
+        title="Contact Developer"
+      >
+        <ContactDeveloperForm />
+      </Modal>
     </>
   );
 };

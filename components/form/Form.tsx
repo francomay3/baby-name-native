@@ -4,6 +4,7 @@ import { Button } from "react-native-paper";
 import { GestureResponderEvent } from "react-native";
 import { Box, Column } from "../layout";
 import { Text } from "../typography";
+import { useMessage } from "@/providers/message";
 
 const Form = <T extends Record<string, any>>({
   children: fields,
@@ -12,7 +13,6 @@ const Form = <T extends Record<string, any>>({
   initialValues,
   errorMessage,
   onSubmitSuccess,
-  onSubmitFailure,
   validate,
 }: {
   children: React.ReactNode;
@@ -25,15 +25,14 @@ const Form = <T extends Record<string, any>>({
   validate?: (values: T) => { [key: string]: string | undefined };
 }) => {
   const [loading, setLoading] = useState(false);
+  const { errorBoundary } = useMessage();
 
   const handleSubmit = async (values: T) => {
     setLoading(true);
-    try {
+    await errorBoundary(async () => {
       await onSubmit(values);
       onSubmitSuccess?.(values);
-    } catch (error) {
-      onSubmitFailure?.(error);
-    }
+    });
     setLoading(false);
   };
 

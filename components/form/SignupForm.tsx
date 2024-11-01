@@ -1,5 +1,5 @@
 import Form from "./Form";
-import React, { useState } from "react";
+import React from "react";
 import { ConnectedTextInput } from "./TextInput";
 import {
   composeValidators,
@@ -8,9 +8,7 @@ import {
   matches,
   getFormValidate,
 } from "./validators";
-import { useAuth } from "@/authentication";
-import { FirebaseError } from "firebase/app";
-import errorMessageMap from "@/utils/errorMessageMap";
+import { useAuth } from "@/providers/auth";
 
 type Values = {
   name: string;
@@ -31,7 +29,6 @@ const SignupForm = ({
 }: {
   onSubmitSuccess?: (values: Values) => void;
 }) => {
-  const [errorMessage, setErrorMessage] = useState("");
   const { signUp } = useAuth();
   const handleSignup = async ({
     name,
@@ -42,17 +39,7 @@ const SignupForm = ({
     email: string;
     password: string;
   }) => {
-    setErrorMessage("");
     await signUp(name, email, password);
-  };
-
-  const onSubmitFailure = (error: unknown) => {
-    if (error instanceof FirebaseError) {
-      const errorCode = error.code as keyof typeof errorMessageMap;
-      setErrorMessage(errorMessageMap[errorCode]);
-    } else {
-      setErrorMessage(errorMessageMap["unknown"]);
-    }
   };
 
   return (
@@ -65,9 +52,7 @@ const SignupForm = ({
         password: "",
         confirmPassword: "",
       }}
-      errorMessage={errorMessage}
       onSubmitSuccess={onSubmitSuccess}
-      onSubmitFailure={onSubmitFailure}
       validate={validate}
     >
       <ConnectedTextInput name="name" label="Name" />

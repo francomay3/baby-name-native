@@ -1,5 +1,5 @@
 import { Redirect, Tabs } from "expo-router";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 import TabBar from "@/components/TabBar";
 import header from "@/components/Header";
 

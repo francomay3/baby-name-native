@@ -1,5 +1,5 @@
 import { router, Stack } from "expo-router";
-import { useAuth } from "@/authentication";
+import { useAuth } from "@/providers/auth";
 import { useEffect } from "react";
 import { useRootNavigationState } from "expo-router";
 import Loader from "@/components/Loader";
