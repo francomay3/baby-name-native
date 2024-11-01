@@ -1,5 +1,4 @@
 import errorMessageMap from "@/utils/errorMessageMap";
-import { FirebaseError } from "firebase/app";
 import { createContext, useContext, ReactNode, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { Snackbar, useTheme } from "react-native-paper";
@@ -81,20 +80,33 @@ const SnackContext = createContext<ContextValue | undefined>(undefined);
 export const MessageProvider = ({ children }: { children: ReactNode }) => {
   const { SnackProps, showSnack } = useSnackbar();
 
-  const errorBoundary = async (func: () => Promise<void>) => {
+  const errorBoundary = async (func: () => Promise<unknown>) => {
     try {
-      await func();
+      const response = await func();
+      if (response instanceof Response && !response.ok) {
+        throw {
+          code: response.status.toString(),
+          message: response.statusText,
+        };
+      }
     } catch (error) {
-      if (error instanceof FirebaseError) {
-        const errorCode = error.code as keyof typeof errorMessageMap;
-        showSnack(errorMessageMap[errorCode], {
-          type: "error",
-        });
-      } else {
+      if (
+        !error ||
+        typeof error !== "object" ||
+        !("code" in error) ||
+        typeof error.code !== "string" ||
+        !Object.keys(errorMessageMap).includes(error.code)
+      ) {
         showSnack(errorMessageMap["unknown"], {
           type: "error",
         });
+        return;
       }
+      const errorCode = error.code;
+      // @ts-ignore this is safe because we already checked that error.code is a key of errorMessageMap
+      showSnack(errorMessageMap[errorCode], {
+        type: "error",
+      });
     }
   };
 

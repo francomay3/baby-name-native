@@ -1,7 +1,10 @@
 // add more error codes as needed: https://firebase.google.com/docs/reference/js/auth#autherrorcodes
 
 export default {
+  // UNKNOWN ERRORS
   unknown: "Something went wrong. Please try again later.",
+
+  // AUTH ERRORS
   "auth/invalid-email": "Invalid email address.",
   "auth/user-disabled": "This user account has been disabled.",
   "auth/user-not-found": "No user found with this email address.",
@@ -110,4 +113,19 @@ export default {
   "auth/missing-recaptcha-version": "Missing recaptcha version.",
   "auth/invalid-recaptcha-version": "Invalid recaptcha version.",
   "auth/invalid-req-type": "Invalid req type.",
+  // API ERRORS
+  VALIDATION_ERROR: "Invalid input data provided.",
+  INTERNAL_SERVER_ERROR:
+    "An internal server error occurred. Please try again later.",
+  ADMIN_ONLY: "This action is restricted to administrators only.",
+  INVALID_TOKEN: "Invalid authentication token provided.",
+  NO_TOKEN: "No authentication token provided.",
+  SELF_ONLY: "You can only perform this action on your own account.",
+  UNAUTHORIZED: "You are not authorized to perform this action.",
+  NOT_FOUND: "The requested resource was not found.",
+  METHOD_NOT_ALLOWED: "This HTTP method is not allowed for this endpoint.",
+  CREATED: "Resource created successfully.",
+  READ: "Resource retrieved successfully.",
+  UPDATED: "Resource updated successfully.",
+  DELETED: "Resource deleted successfully.",
 };

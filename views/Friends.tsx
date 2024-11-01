@@ -1,69 +1,109 @@
-import { Container, Row } from "@/components/layout";
+import { Container } from "@/components/layout";
 import React from "react";
-import { FAB, List } from "react-native-paper";
-import useDisclosure from "@/hooks/useDisclosure";
-import Modal from "@/components/Modal";
-import InviteFriendForm from "@/components/form/InviteFriendForm";
+import { List, Searchbar } from "react-native-paper";
 import { useAuth } from "@/providers/auth";
 import { ScrollView } from "react-native";
 import { router } from "expo-router";
 import AvatarPicker from "@/components/AvatarPicker";
 import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "@/api";
+import { getUsers, searchUsers } from "@/api";
 import { Text } from "@/components/typography";
 import Loading from "./Loading";
+import useDebounce from "@/hooks/useDebounce";
+import { Friend, User } from "@/types";
+
+const bySearch = (search?: string) => (friend: User) => {
+  if (!search) return true;
+  const searchLower = search.toLowerCase();
+  return (
+    friend.name.toLowerCase().includes(searchLower) ||
+    friend.email.toLowerCase().includes(searchLower)
+  );
+};
+
+type PersonProps = { user: User } & Omit<
+  React.ComponentProps<typeof List.Item>,
+  "title"
+>;
+const Person = ({ user, ...rest }: PersonProps) => {
+  return (
+    <List.Item
+      key={user.id}
+      title={user.name}
+      onPress={() => router.push(`/friends/${user.id}`)}
+      left={() => <AvatarPicker size={25} image={user.avatar} />}
+      {...rest}
+    />
+  );
+};
+
+type SectionProps = {
+  users?: User[];
+  title: string;
+  filter?: string;
+} & Omit<React.ComponentProps<typeof List.Section>, "children">;
+const Section = ({ users, title, filter, ...rest }: SectionProps) => {
+  if (!users?.length) return null;
+  return (
+    <List.Section title={title} {...rest}>
+      {users.filter(bySearch(filter)).map((person) => (
+        <Person user={person} key={person.id} />
+      ))}
+    </List.Section>
+  );
+};
+
+const notFriend = (friendsTo: Friend[]) => (person: User) =>
+  !friendsTo.map((friend) => friend.friendId).includes(person.id);
 
 const Friends = () => {
-  // TODO: there should be a search icon in the header to search for friends.
-  // TODO: there should be a button to remove friend
-  // TODO: a route to view friend profile. it should display what polls the friend and you have in common.
+  const [search, setSearch] = React.useState("");
+  const debouncedSearch = useDebounce(search);
 
   const { user, token } = useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const friends = user?.friendsTo ?? [];
-  // TODO: handle case in which there are no friends. dont show the list, show a message and the FAB in the center.
-  const hasFriends = friends.length > 0;
+  const friendsTo = user?.friendsTo ?? [];
 
-  const { data, isLoading, error } = useQuery({
+  const {
+    data: friendsQuery,
+    isLoading: friendsIsLoading,
+    error: friendsError,
+  } = useQuery({
     queryKey: ["friends"],
     queryFn: () =>
       getUsers(
         token,
-        friends.map((friend) => friend.friendId)
+        friendsTo.map((friend) => friend.friendId)
       ),
-    enabled: hasFriends,
+    enabled: !!friendsTo.length,
   });
 
-  const friendsData = data?.data;
+  const { data: searchQuery, isLoading: searchIsLoading } = useQuery({
+    queryKey: ["search", debouncedSearch],
+    queryFn: () => searchUsers(token, debouncedSearch),
+    enabled: !!search.length,
+  });
 
-  if (isLoading) return <Loading />;
-  if (error) return <Text>Error fetching friends</Text>;
+  const friends = friendsQuery?.data;
+  const searchedPeople = searchQuery?.data.filter(notFriend(friendsTo));
 
-  // TODO: handle case. I think it should never happen, but just in case.
-  if (!friendsData) return null;
+  if (friendsIsLoading) return <Loading />;
+  if (friendsError) return <Text>Error fetching friends</Text>;
 
   return (
     <>
-      <Modal visible={isOpen} onClose={onClose} title="Invite a Friend!">
-        <InviteFriendForm />
-      </Modal>
       <Container>
+        <Searchbar
+          style={{ width: "100%" }}
+          placeholder="Search"
+          value={search}
+          onChangeText={setSearch}
+          loading={searchIsLoading}
+        />
         <ScrollView style={{ flex: 1, width: "100%" }}>
-          <List.Section title="Friends">
-            {friendsData?.map((friend) => (
-              <List.Item
-                key={friend.id}
-                title={friend.name}
-                onPress={() => router.push(`/friends/${friend.id}`)}
-                left={() => <AvatarPicker size={25} image={friend.avatar} />}
-              />
-            ))}
-          </List.Section>
+          <Section users={friends} title="Friends" filter={search} />
+          <Section users={searchedPeople} title="Search Results" />
         </ScrollView>
-        <Row w="100%" justify="flex-end">
-          <FAB icon="plus" onPress={onOpen} label="Invite a Friend!" />
-        </Row>
       </Container>
     </>
   );

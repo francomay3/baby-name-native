@@ -7,7 +7,7 @@ export type Poll = {
   title: string;
 };
 
-type Friend = {
+export type Friend = {
   createdAt: string;
   userId: string;
   friendId: string;
@@ -28,6 +28,26 @@ export type User = {
 
 export type Users = User[];
 
+export type Code =
+  | "VALIDATION_ERROR"
+  | "INTERNAL_SERVER_ERROR"
+  | "ADMIN_ONLY"
+  | "INVALID_TOKEN"
+  | "NO_TOKEN"
+  | "SELF_ONLY"
+  | "UNAUTHORIZED"
+  | "NOT_FOUND"
+  | "METHOD_NOT_ALLOWED"
+  | "CREATED"
+  | "READ"
+  | "UPDATED"
+  | "DELETED"
+  | "EMPTY";
+
 export type Res<Data> = Promise<{
   data: Data;
+  code: Code;
+  ok: boolean;
+  message: string;
+  status: number;
 }>;

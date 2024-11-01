@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { Res, User, Users } from "../types";
+import { Poll, Res, User, Users } from "../types";
 import { POST, GET, PATCH, DELETE } from "./utils";
 
 // *** DATABASE FUNCTIONS ***
@@ -49,7 +49,7 @@ export const createUser = async ({
 
 // FUNCTIONS READ
 export const getPollDetails = async (token: string, pollId: number) => {
-  return await GET({
+  return await GET<Poll>({
     endpoint: "get-poll-details",
     token,
     params: { pollId },
@@ -58,7 +58,7 @@ export const getPollDetails = async (token: string, pollId: number) => {
 
 type GetUser = (uid: string) => Res<User>;
 export const getUser: GetUser = async (uid) => {
-  return await GET({
+  return await GET<User>({
     endpoint: "get-user",
     params: { uid },
   });
@@ -66,10 +66,21 @@ export const getUser: GetUser = async (uid) => {
 
 type GetUsers = (token: string, uids: string[]) => Res<Users>;
 export const getUsers: GetUsers = async (token, uids) => {
-  return await GET({
+  return await GET<Users>({
     endpoint: "get-users",
     token,
     params: { uids },
+  });
+};
+
+type SearchUsers = (token: string, query: string) => Res<Users>;
+export const searchUsers: SearchUsers = async (token, query) => {
+  if (!query)
+    return { data: [], code: "EMPTY", ok: true, message: "", status: 200 };
+  return await GET<Users>({
+    endpoint: "search-users",
+    token,
+    params: { query },
   });
 };
 

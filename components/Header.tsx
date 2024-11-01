@@ -5,6 +5,7 @@ import { Appbar, Button } from "react-native-paper";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
 import { router } from "expo-router";
+
 const Header = ({
   navigation,
   options,
@@ -13,7 +14,6 @@ const Header = ({
   back,
 }: NativeStackHeaderProps | BottomTabHeaderProps) => {
   const { title } = options;
-
   const onGoBack = throttle(() => {
     navigation.dispatch({
       ...StackActions.pop(),

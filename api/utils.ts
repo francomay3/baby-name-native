@@ -1,7 +1,9 @@
+import { Res } from "@/types";
+
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 // HELPER FUNCTIONS
-export const PATCH = async ({
+export const PATCH = async <T>({
   endpoint,
   token,
   args,
@@ -9,7 +11,7 @@ export const PATCH = async ({
   endpoint: string;
   token?: string;
   args?: Record<string, any>;
-}) => {
+}): Res<T> => {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -28,10 +30,10 @@ export const PATCH = async ({
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Res<T>;
 };
 
-export const DELETE = async ({
+export const DELETE = async <T>({
   endpoint,
   token,
   args,
@@ -39,7 +41,7 @@ export const DELETE = async ({
   endpoint: string;
   token?: string;
   args?: Record<string, any>;
-}) => {
+}): Res<T> => {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -58,10 +60,10 @@ export const DELETE = async ({
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Res<T>;
 };
 
-export const POST = async ({
+export const POST = async <T>({
   endpoint,
   token,
   args,
@@ -69,7 +71,7 @@ export const POST = async ({
   endpoint: string;
   token?: string;
   args?: Record<string, any>;
-}) => {
+}): Res<T> => {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -88,10 +90,10 @@ export const POST = async ({
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Res<T>;
 };
 
-export const GET = async ({
+export const GET = async <T>({
   endpoint,
   token,
   params,
@@ -99,7 +101,7 @@ export const GET = async ({
   endpoint: string;
   token?: string;
   params?: Record<string, any>;
-}) => {
+}): Res<T> => {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -125,5 +127,5 @@ export const GET = async ({
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Res<T>;
 };
