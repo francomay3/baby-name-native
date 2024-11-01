@@ -18,10 +18,10 @@ import {
   // TODO: add this functionality
   // sendPasswordResetEmail,
 } from "firebase/auth";
-import Loader from "@/components/Loader";
 import { createUser, getUser, deleteUser as deleteUserDB } from "@/api";
 import { User } from "@/types";
 import { useMessage } from "./message";
+import Loading from "@/views/Loading";
 
 type signUp = (
   name: string,
@@ -42,7 +42,6 @@ type Value =
       signIn: signIn;
       signOut: signOut;
       hasAccess: boolean;
-      loading: boolean;
       googleUser: GoogleUser | null;
       deleteUser: deleteUser;
       token: string;
@@ -55,9 +54,8 @@ const AuthContext = createContext<Value>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | undefined>();
   const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
-  const [loading, setLoading] = useState(true);
   const { errorBoundary } = useMessage();
 
   // @ts-ignore
@@ -128,8 +126,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (googleUsr) => {
-      if (loading) setLoading(false);
-
       if (!googleUsr) {
         setUser(null);
         setGoogleUser(null);
@@ -144,7 +140,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     return unsubscribe;
   }, []);
 
-  if (loading) return <Loader />;
+  if (user === undefined) return <Loading />;
 
   return (
     <AuthContext.Provider
@@ -155,7 +151,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         user,
         googleUser,
         hasAccess: (googleUser?.emailVerified && !!user) ?? false,
-        loading,
         deleteUser,
         token,
         refetch,

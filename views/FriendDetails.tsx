@@ -2,13 +2,13 @@ import { Text } from "@/components/typography";
 import React, { Fragment } from "react";
 import { getUser } from "@/api";
 import { useQuery } from "@tanstack/react-query";
-import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/providers/auth";
 import { Column, Container, Divider } from "@/components/layout";
 import { List } from "react-native-paper";
 import { Pressable } from "react-native";
 import AvatarPicker from "@/components/AvatarPicker";
+import Loading from "./Loading";
 
 const FriendDetails = () => {
   const { friendId } = useLocalSearchParams<{ friendId: string }>();
@@ -27,7 +27,7 @@ const FriendDetails = () => {
     console.log("send invite", pollId);
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loading />;
   if (error) return <Text>Error fetching friend details</Text>;
   // TODO: handle case. I think it should never happen, but just in case.
   if (!friendDetails) return null;

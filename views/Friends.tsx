@@ -10,8 +10,8 @@ import { router } from "expo-router";
 import AvatarPicker from "@/components/AvatarPicker";
 import { useQuery } from "@tanstack/react-query";
 import { getUsers } from "@/api";
-import Loader from "@/components/Loader";
 import { Text } from "@/components/typography";
+import Loading from "./Loading";
 
 const Friends = () => {
   // TODO: there should be a search icon in the header to search for friends.
@@ -37,7 +37,7 @@ const Friends = () => {
 
   const friendsData = data?.data;
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <Loading />;
   if (error) return <Text>Error fetching friends</Text>;
 
   // TODO: handle case. I think it should never happen, but just in case.

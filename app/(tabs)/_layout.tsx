@@ -4,9 +4,9 @@ import TabBar from "@/components/TabBar";
 import header from "@/components/Header";
 
 export default function TabLayout() {
-  const { hasAccess, loading } = useAuth();
+  const { hasAccess } = useAuth();
 
-  if (!hasAccess && !loading) return <Redirect href="/login" />;
+  if (!hasAccess) return <Redirect href="/login" />;
 
   return (
     <Tabs tabBar={TabBar} screenOptions={{ headerShown: false }}>

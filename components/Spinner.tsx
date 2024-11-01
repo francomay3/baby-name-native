@@ -2,7 +2,7 @@ import React from "react";
 import { ActivityIndicator } from "react-native-paper";
 import { Container } from "./layout";
 
-const Loader = () => {
+const Spinner = () => {
   return (
     <Container center w="100%" h="100%">
       <ActivityIndicator animating={true} />
@@ -10,4 +10,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default Spinner;
