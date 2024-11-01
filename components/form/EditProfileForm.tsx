@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ConnectedTextInput } from "./TextInput";
 import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
-import { updateProfile } from "@/database";
+import { updateProfile } from "@/api";
 import { useAuth } from "@/authentication";
 
 import { Formik, FormikProps } from "formik";

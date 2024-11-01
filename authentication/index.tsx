@@ -19,7 +19,7 @@ import {
   // sendPasswordResetEmail,
 } from "firebase/auth";
 import Loader from "@/components/Loader";
-import { createUser, getUser, deleteUser as deleteUserDB } from "@/database";
+import { createUser, getUser, deleteUser as deleteUserDB } from "@/api";
 import { User } from "@/types";
 
 type signUp = (
@@ -74,7 +74,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const refetch = async () => {
+    console.log("refetch");
     const newUser = await getUser(googleUser?.uid!);
+    console.log("refetch success");
     setUser(newUser.data);
   };
 
@@ -84,7 +86,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       email,
       password
     );
+    console.log("signIn");
     const newUser = await getUser(userCredential.user.uid);
+    console.log("signIn success");
     setGoogleUser(userCredential.user);
     setUser(newUser.data);
     return userCredential;
@@ -119,16 +123,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (googleUsr) => {
-      // @ts-ignore
-      if (googleUsr) {
-        const newUser = await getUser(googleUsr?.uid!);
-        setUser(newUser.data);
-        setGoogleUser(googleUsr);
-      } else {
+      if (loading) setLoading(false);
+
+      if (!googleUsr) {
         setUser(null);
         setGoogleUser(null);
+        return;
       }
-      if (loading) setLoading(false);
+      try {
+        const newUser = await getUser(googleUsr.uid);
+        setUser(newUser.data);
+        setGoogleUser(googleUsr);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
     });
     return unsubscribe;
   }, []);

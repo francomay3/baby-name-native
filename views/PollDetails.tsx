@@ -1,7 +1,7 @@
 import { Text } from "@/components/typography";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getPollDetails } from "@/database";
+import { getPollDetails } from "@/api";
 import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/authentication";

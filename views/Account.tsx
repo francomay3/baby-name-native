@@ -11,7 +11,7 @@ import useDisclosure from "@/hooks/useDisclosure";
 import EditProfileForm from "@/components/form/EditProfileForm";
 import AvatarPicker from "@/components/AvatarPicker";
 import ContactDeveloperForm from "@/components/form/ContactDeveloperForm";
-import { updateUserAvatar } from "@/api";
+import { updateProfile } from "@/api";
 
 const Li = ({
   title,
@@ -27,14 +27,16 @@ const Li = ({
   return (
     <List.Item
       title={title}
-      left={() => <Icon source={icon} size={20} color={theme.colors.primary} />}
+      left={() => <List.Icon icon={icon} color={theme.colors.primary} />}
       onPress={onPress}
     />
   );
 };
 
 const Account = () => {
-  const { user, signOut, deleteUser, refetch } = useAuth();
+  const { user, signOut, deleteUser, refetch, token } = useAuth();
+  const theme = useTheme();
+
   const {
     isOpen: isEditProfileModalOpen,
     onOpen: onEditProfileModalOpen,
@@ -77,9 +79,10 @@ const Account = () => {
     console.log("Dark Mode");
   };
 
-  const handleImageChange = (image: string) => {
+  const handleImageChange = async (image: string) => {
     // TODO: implement error handling
-    updateUserAvatar(user!, image);
+    await updateProfile({ token, uid: user!.id, avatar: image });
+    refetch();
   };
 
   const handleDeleteAccount = async () => {
@@ -169,10 +172,15 @@ const Account = () => {
           <Divider margin="md" />
           <List.Section>
             <Li onPress={signOut} title="Log out" icon="logout" />
-            <Li
-              onPress={handleDeleteAccount}
+            <List.Item
               title="Delete Account"
-              icon="delete"
+              left={() => (
+                <List.Icon icon="delete" color={theme.colors.error} />
+              )}
+              description="This action cannot be undone."
+              titleStyle={{ color: theme.colors.error }}
+              descriptionStyle={{ color: theme.colors.error }}
+              onPress={handleDeleteAccount}
             />
           </List.Section>
         </ScrollView>

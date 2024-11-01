@@ -4,35 +4,30 @@ import { ConnectedTextInput } from "./TextInput";
 import { sendMessageToDeveloper } from "@/api";
 import { useAuth } from "@/authentication";
 
-type Values = { name: string; message: string };
+type Values = { message: string };
 
 const ContactDeveloperForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
-  const { user } = useAuth();
+  const { token } = useAuth();
 
-  const handleSubmitMessage = async ({
-    name,
-    message,
-  }: {
-    name: string;
-    message: string;
-  }) => {
+  const handleSubmitMessage = async ({ message }: { message: string }) => {
     setErrorMessage("");
     try {
-      await sendMessageToDeveloper(name, user?.email!, message);
+      await sendMessageToDeveloper(token, message);
     } catch (error) {
       // TODO: implement
     }
   };
 
+  // TODO: add validation. message should not be empty.
   return (
     <Form<Values>
       onSubmit={handleSubmitMessage}
       submitText="Send Message"
-      initialValues={{ name: "", message: "" }}
+      initialValues={{ message: "" }}
       errorMessage={errorMessage}
     >
-      <ConnectedTextInput name="name" label="Name" />
+      {/* TODO: field should be a textarea */}
       <ConnectedTextInput name="message" label="Message" />
     </Form>
   );

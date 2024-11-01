@@ -8,6 +8,16 @@ import useDisclosure from "@/hooks/useDisclosure";
 import { Box, BoxProps } from "./layout";
 import { Pressable } from "react-native";
 import { faker } from "@faker-js/faker";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+
+const resizeImage = async (uri: string) => {
+  const image = await manipulateAsync(
+    uri,
+    [{ resize: { width: 256, height: 256 } }],
+    { compress: 0.7, format: SaveFormat.WEBP }
+  );
+  return image.uri;
+};
 
 const AvatarPicker = ({
   size,
@@ -27,31 +37,27 @@ const AvatarPicker = ({
     return <Box>{avatar}</Box>;
   }
 
-  const pickImage = async () => {
+  const pickImageHandler = (type: "camera" | "gallery") => async () => {
     onClose();
-    const result = await launchImageLibraryAsync({
+    const options = {
+      allowsEditing: true,
       mediaTypes: MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1] as [number, number],
       quality: 1,
-    });
-
-    if (!result.canceled) {
-      onImageChange(result.assets[0].uri);
+    };
+    let result;
+    if (type === "camera") {
+      result = await launchCameraAsync(options);
+    } else {
+      result = await launchImageLibraryAsync(options);
     }
-  };
 
-  const takePhoto = async () => {
-    onClose();
-    const result = await launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      onImageChange(result.assets[0].uri);
+    if (result.canceled) {
+      return;
     }
+
+    const uri = await resizeImage(result.assets[0].uri);
+    onImageChange(uri);
   };
 
   return (
@@ -77,12 +83,12 @@ const AvatarPicker = ({
         }
       >
         <Menu.Item
-          onPress={takePhoto}
+          onPress={pickImageHandler("camera")}
           title="choose from camera"
           leadingIcon="camera"
         />
         <Menu.Item
-          onPress={pickImage}
+          onPress={pickImageHandler("gallery")}
           title="choose from gallery"
           leadingIcon="image"
         />

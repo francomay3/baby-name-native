@@ -1,6 +1,6 @@
 import { Box, Column, Row } from "@/components/layout";
 import { Text } from "@/components/typography";
-import { resetDatabase } from "@/database";
+import { resetDatabase } from "@/api";
 import React from "react";
 import { ScrollView } from "react-native";
 import { useTheme, Button } from "react-native-paper";

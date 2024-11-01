@@ -4,7 +4,7 @@ import { ConnectedTextInput } from "./TextInput";
 import { composeValidators, getFormValidate, required } from "./validators";
 import { FirebaseError } from "firebase/app";
 import errorMessageMap from "@/utils/errorMessageMap";
-import { createPoll } from "@/database";
+import { createPoll } from "@/api";
 import { useAuth } from "@/authentication";
 
 type Values = {

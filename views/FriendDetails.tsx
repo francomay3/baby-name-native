@@ -1,6 +1,6 @@
 import { Text } from "@/components/typography";
 import React, { Fragment } from "react";
-import { getUser } from "@/database";
+import { getUser } from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/Loader";
 import { useLocalSearchParams } from "expo-router";
