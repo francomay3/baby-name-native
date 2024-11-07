@@ -111,7 +111,6 @@ export const GET = async <T>({
   }
 
   const baseUrl = `${backendUrl}/${endpoint}`;
-  console.log(baseUrl);
   const url = new URL(baseUrl);
 
   if (params) {

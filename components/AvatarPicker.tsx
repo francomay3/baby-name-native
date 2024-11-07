@@ -6,17 +6,21 @@ import {
 import { Menu, Avatar, FAB } from "react-native-paper";
 import useDisclosure from "@/hooks/useDisclosure";
 import { Box, BoxProps } from "./layout";
-import { Pressable } from "react-native";
+import { Platform, Pressable } from "react-native";
 import { faker } from "@faker-js/faker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import { EncodingType, readAsStringAsync } from "expo-file-system";
 
 const resizeImage = async (uri: string) => {
   const image = await manipulateAsync(
     uri,
     [{ resize: { width: 256, height: 256 } }],
-    { compress: 0.7, format: SaveFormat.WEBP }
+    { compress: 0.7, format: SaveFormat.JPEG, base64: true }
   );
-  return image.uri;
+
+  return Platform.OS === "web"
+    ? image.uri
+    : `data:image/jpeg;base64,${image.base64}`;
 };
 
 const AvatarPicker = ({
@@ -43,21 +47,31 @@ const AvatarPicker = ({
       allowsEditing: true,
       mediaTypes: MediaTypeOptions.Images,
       aspect: [1, 1] as [number, number],
-      quality: 1,
+      quality: 0.7,
+      base64: true,
     };
-    let result;
-    if (type === "camera") {
-      result = await launchCameraAsync(options);
-    } else {
-      result = await launchImageLibraryAsync(options);
-    }
+
+    const result =
+      type === "camera"
+        ? await launchCameraAsync(options)
+        : await launchImageLibraryAsync(options);
 
     if (result.canceled) {
       return;
     }
 
-    const uri = await resizeImage(result.assets[0].uri);
-    onImageChange(uri);
+    const base64 =
+      Platform.OS === "web"
+        ? result.assets![0].uri
+        : `data:image/jpeg;base64,${await readAsStringAsync(
+            result.assets![0].uri,
+            {
+              encoding: EncodingType.Base64,
+            }
+          )}`;
+
+    const uri = await resizeImage(base64);
+    onImageChange(uri!);
   };
 
   return (

@@ -34,7 +34,7 @@ const Li = ({
 };
 
 const Account = () => {
-  const { user, signOut, deleteUser, refetch, token } = useAuth();
+  const { user, signOut, refetch, token } = useAuth();
   const theme = useTheme();
   const { errorBoundary } = useMessage();
   const {
@@ -80,19 +80,6 @@ const Account = () => {
     await errorBoundary(async () => {
       await updateProfile({ token, uid: user!.id, avatar: image });
       refetch();
-    });
-  };
-
-  const handleDeleteAccount = async () => {
-    if (
-      !confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-    await errorBoundary(async () => {
-      await deleteUser();
     });
   };
 
@@ -157,16 +144,14 @@ const Account = () => {
           </List.Section>
           <Divider margin="md" />
           <List.Section>
-            <Li onPress={signOut} title="Log out" icon="logout" />
             <List.Item
-              title="Delete Account"
+              title="Log out"
               left={() => (
-                <List.Icon icon="delete" color={theme.colors.error} />
+                <List.Icon icon="logout" color={theme.colors.error} />
               )}
-              description="This action cannot be undone."
               titleStyle={{ color: theme.colors.error }}
               descriptionStyle={{ color: theme.colors.error }}
-              onPress={handleDeleteAccount}
+              onPress={signOut}
             />
           </List.Section>
         </ScrollView>

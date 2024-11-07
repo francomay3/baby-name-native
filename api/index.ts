@@ -98,7 +98,6 @@ export const updateProfile = async ({
   subtitle?: string;
   avatar?: string;
 }): Promise<void> => {
-  console.log(avatar);
   await PATCH({
     endpoint: "update-profile",
     token,
@@ -107,14 +106,6 @@ export const updateProfile = async ({
 };
 
 // FUNCTIONS DELETE
-export const deleteUser = async (token: string, uid: string): Promise<void> => {
-  await DELETE({
-    endpoint: "delete-user",
-    token,
-    args: { uid },
-  });
-};
-
 export const resetDatabase = async (token: string): Promise<void> => {
   await DELETE({
     endpoint: "reset-database",

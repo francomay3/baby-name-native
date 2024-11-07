@@ -14,11 +14,10 @@ import {
   signOut as signOutFirebase,
   UserCredential,
   sendEmailVerification,
-  deleteUser as deleteUserFirebase,
   // TODO: add this functionality
   // sendPasswordResetEmail,
 } from "firebase/auth";
-import { createUser, getUser, deleteUser as deleteUserDB } from "@/api";
+import { createUser, getUser } from "@/api";
 import { User } from "@/types";
 import { useMessage } from "./message";
 import Loading from "@/views/Loading";
@@ -33,7 +32,6 @@ type signIn = (
   password: string
 ) => Promise<UserCredential | undefined>;
 type signOut = () => Promise<void>;
-type deleteUser = () => Promise<void>;
 
 type Value =
   | {
@@ -43,7 +41,6 @@ type Value =
       signOut: signOut;
       hasAccess: boolean;
       googleUser: GoogleUser | null;
-      deleteUser: deleteUser;
       token: string;
       refetch: () => Promise<void>;
     }
@@ -60,20 +57,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   // @ts-ignore
   const token = googleUser?.accessToken;
-
-  const deleteUser: deleteUser = async () => {
-    await errorBoundary(async () => {
-      if (!googleUser) {
-        throw new Error("User not found");
-      }
-
-      await deleteUserDB(token, googleUser.uid);
-      await deleteUserFirebase(googleUser);
-
-      setUser(null);
-      setGoogleUser(null);
-    });
-  };
 
   const refetch = async () => {
     await errorBoundary(async () => {
@@ -151,7 +134,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         user,
         googleUser,
         hasAccess: (googleUser?.emailVerified && !!user) ?? false,
-        deleteUser,
         token,
         refetch,
       }}
